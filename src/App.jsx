@@ -1,106 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useEffect } from "react";
+import { Routes, Route, Outlet } from "react-router-dom";
+import Header from "./components/Header";
+import LibraryScene from "./pages/LibraryScene";
+import BookList from "./pages/BookList";
+import BookDetail from "./pages/BookDetail";
+import BookCreate from "./pages/BookCreate";
+import BookEdit from "./pages/BookEdit";
+import Bookshelf from "./pages/Bookshelf";
+import { getGenres } from "./api/genres";
+import "./App.css";
+import "./styles/catalog.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+// 전 화면 공통 셸 — 헤더 + 장르 데이터 1회 로드
+function AppLayout() {
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    getGenres()
+      .then(setGenres)
+      .catch(() => setGenres([]));
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div className='app-shell'>
+      <Header />
+      <main className='app-main'>
+        <Outlet context={{ genres }} />
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <div className='library-app'>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path='/' element={<LibraryScene />} />
+          <Route path='/books' element={<BookList />} />
+          <Route path='/books/new' element={<BookCreate />} />
+          <Route path='/books/:id' element={<BookDetail />} />
+          <Route path='/books/:id/edit' element={<BookEdit />} />
+          <Route path='/shelf' element={<Bookshelf />} />
+        </Route>
+      </Routes>
+    </div>
+  );
+}
