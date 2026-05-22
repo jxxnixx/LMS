@@ -1,0 +1,37 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "title": "별빛 아래의 서점",
+      "author": "홍길동",
+      "content": "작은 마을 서점의 1년을 담은 이야기...",
+      "genreCode": "NV-02",
+      "coverImageUrl": "",
+      "isLiked": true,
+      "createdAt": "2026-04-24T09:00:00.000Z",
+      "updatedAt": "2026-04-24T09:00:00.000Z"
+    }
+  ],
+  "genres": [
+    { "code": "NV",    "label": "소설",   "parentCode": null },
+    { "code": "NV-01", "label": "로맨스", "parentCode": "NV" },
+    { "code": "NV-02", "label": "판타지", "parentCode": "NV" },
+    { "code": "NV-03", "label": "스릴러", "parentCode": "NV" },
+    { "code": "NV-04", "label": "SF",     "parentCode": "NV" },
+    { "code": "NV-05", "label": "호러",   "parentCode": "NV" },
+
+    { "code": "PO",    "label": "시",     "parentCode": null },
+    { "code": "PO-01", "label": "서정시", "parentCode": "PO" },
+    { "code": "PO-02", "label": "현대시", "parentCode": "PO" },
+    { "code": "PO-03", "label": "동시",   "parentCode": "PO" },
+
+    { "code": "ES",    "label": "에세이", "parentCode": null },
+    { "code": "ES-01", "label": "여행",   "parentCode": "ES" },
+    { "code": "ES-02", "label": "일상",   "parentCode": "ES" },
+    { "code": "ES-03", "label": "성장",   "parentCode": "ES" },
+
+    { "code": "DI",    "label": "일기",   "parentCode": null },
+    { "code": "DI-01", "label": "감성",   "parentCode": "DI" },
+    { "code": "DI-02", "label": "육아",   "parentCode": "DI" }
+  ]
+}
