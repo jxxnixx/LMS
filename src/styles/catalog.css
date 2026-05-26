@@ -733,6 +733,43 @@
   color: var(--muted);
 }
 
+/* ── 페이지네이션 ── */
+.cat-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2rem;
+}
+
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #fff;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.page-btn:hover:not(:disabled) {
+  border-color: var(--wood);
+  color: var(--wood);
+}
+.page-btn.active {
+  background: var(--wood);
+  border-color: var(--wood);
+  color: #fff;
+  font-weight: 700;
+}
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 /* ── 반응형 ── */
 @media (max-width: 640px) {
   .cat-page {
