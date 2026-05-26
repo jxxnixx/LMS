@@ -13,6 +13,15 @@ export default function BookList() {
   const [topCode, setTopCode] = useState('')
   const [subCode, setSubCode] = useState('')
   const [likedOnly, setLikedOnly] = useState(false)
+  const [sort, setSort] = useState('title-asc')
+
+  const SORT_OPTIONS = [
+    { value: 'title-asc',   label: '제목 가나다순',  _sort: 'title',     _order: 'asc'  },
+    { value: 'title-desc',  label: '제목 역순',      _sort: 'title',     _order: 'desc' },
+    { value: 'author-asc',  label: '저자 가나다순',  _sort: 'author',    _order: 'asc'  },
+    { value: 'newest',      label: '최신 등록순',    _sort: 'createdAt', _order: 'desc' },
+    { value: 'oldest',      label: '오래된 순',      _sort: 'createdAt', _order: 'asc'  },
+  ]
 
   useEffect(() => {
     const parts = []
@@ -20,7 +29,8 @@ export default function BookList() {
     if (subCode) parts.push(`genreCode=${subCode}`)
     else if (topCode) parts.push(`genreCode_like=${topCode}`)
     if (likedOnly) parts.push('isLiked=true')
-    parts.push('_sort=createdAt', '_order=desc')
+    const { _sort, _order } = SORT_OPTIONS.find(o => o.value === sort)
+    parts.push(`_sort=${_sort}`, `_order=${_order}`)
     const query = parts.join('&')
 
     const timer = setTimeout(() => {
@@ -33,7 +43,7 @@ export default function BookList() {
         })
     }, 250)
     return () => clearTimeout(timer)
-  }, [search, topCode, subCode, likedOnly])
+  }, [search, topCode, subCode, likedOnly, sort])
 
   return (
     <div className="cat-page">
@@ -66,6 +76,15 @@ export default function BookList() {
         >
           ❤️ 책장만
         </button>
+        <select
+          className="cat-sort"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          {SORT_OPTIONS.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
       </div>
 
       {error && (
