@@ -6,6 +6,7 @@ import {
   Link,
 } from "react-router-dom";
 import { getBook, updateBook, deleteBook, generateCover } from "../api/books";
+import { buildPrompt } from "../api/imageGen";
 import { genreLabel, themeOf } from "../theme";
 
 const fmtDate = (s) => (s ? s.slice(0, 10).replace(/-/g, ".") : "-");
@@ -75,14 +76,9 @@ export default function BookDetail() {
     setAiError(null);
     setPreview("");
     try {
-      const prompt =
-        `Book cover artwork for "${book.title}" by ${book.author}. ` +
-        `Genre: ${genreLabel(genres, book.genreCode)}. ` +
-        `Story: ${book.content} ` +
-        `Painterly, atmospheric illustration. Make a PERFECT BOOK COVER.`;
       const dataUrl = await generateCover({
         apiKey: apiKey.trim(),
-        prompt,
+        prompt: buildPrompt(book),
         quality,
       });
       setPreview(dataUrl);
