@@ -77,7 +77,7 @@ function getHook(genreCode) {
   return set[Math.floor(Math.random() * set.length)];
 }
 
-function buildPrompt(book) {
+export function buildPrompt(book) {
   const visualFn = GENRE_VISUAL[book.genreCode];
   const visualDesc = visualFn
     ? visualFn(book.title, book.content)
