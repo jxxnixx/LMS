@@ -5,6 +5,8 @@ import { genreLabel } from '../theme'
 import BookCard from '../components/BookCard'
 import GenreSelect from '../components/GenreSelect'
 
+const ITEMS_PER_PAGE = 10
+
 export default function BookList() {
   const { genres } = useOutletContext()
   const [books, setBooks] = useState(null)
@@ -14,6 +16,7 @@ export default function BookList() {
   const [subCode, setSubCode] = useState('')
   const [likedOnly, setLikedOnly] = useState(false)
   const [sort, setSort] = useState('title-asc')
+  const [page, setPage] = useState(1)
 
   const SORT_OPTIONS = [
     { value: 'title-asc',   label: '제목 가나다순',  _sort: 'title',     _order: 'asc'  },
@@ -35,6 +38,7 @@ export default function BookList() {
 
     const timer = setTimeout(() => {
       setError(null)
+      setPage(1)
       getBooks(query)
         .then(setBooks)
         .catch((e) => {
@@ -44,6 +48,9 @@ export default function BookList() {
     }, 250)
     return () => clearTimeout(timer)
   }, [search, topCode, subCode, likedOnly, sort])
+
+  const totalPages = books ? Math.max(1, Math.ceil(books.length / ITEMS_PER_PAGE)) : 1
+  const paginated = books ? books.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE) : []
 
   return (
     <div className="cat-page">
@@ -98,15 +105,37 @@ export default function BookList() {
         <div className="cat-state">조건에 맞는 책이 없어요.</div>
       )}
       {books && books.length > 0 && (
-        <div className="book-grid">
-          {books.map((b) => (
-            <BookCard
-              key={b.id}
-              book={b}
-              genreText={genreLabel(genres, b.genreCode)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="book-grid">
+            {paginated.map((b) => (
+              <BookCard
+                key={b.id}
+                book={b}
+                genreText={genreLabel(genres, b.genreCode)}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="cat-pagination">
+              <button className="page-btn" onClick={() => setPage(p => p - 1)} disabled={page === 1}>
+                이전
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  className={`page-btn${p === page ? ' active' : ''}`}
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </button>
+              ))}
+              <button className="page-btn" onClick={() => setPage(p => p + 1)} disabled={page === totalPages}>
+                다음
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
