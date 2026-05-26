@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getBooks } from "../api/books";
-import { themeOf } from "../theme";
+import { useGenres } from "../context/GenreContext";
 
 function MiniBook({ book, color }) {
   const navigate = useNavigate();
@@ -29,15 +29,15 @@ function MiniBook({ book, color }) {
 
 // 3D 복도에서 책장(대분류)을 클릭하면 그 대분류 전체를 소분류 선반으로 펼쳐 보여준다
 export default function ShelfView({ genre, onBack }) {
-  const { genres } = useOutletContext();
+  const { get, subsOf, themeFor } = useGenres();
   const navigate = useNavigate();
   const [books, setBooks] = useState(null);
   const [error, setError] = useState(null);
 
   const topCode = genre.parentCode || genre.code.split("-")[0];
-  const top = genres.find((g) => g.code === topCode);
-  const subs = genres.filter((g) => g.parentCode === topCode);
-  const t = themeOf(topCode);
+  const top = get(topCode);
+  const subs = subsOf(topCode);
+  const t = themeFor(topCode);
 
   useEffect(() => {
     setError(null);

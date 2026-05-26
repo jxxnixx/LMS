@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { useNavigate, useOutletContext } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { createBook } from '../api/books'
+import { useGenres } from '../context/GenreContext'
 import BookForm from '../components/BookForm'
 
 export default function BookCreate() {
-  const { genres } = useOutletContext()
+  const { ready } = useGenres()
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
@@ -28,7 +29,7 @@ export default function BookCreate() {
     }
   }
 
-  if (genres.length === 0) {
+  if (!ready) {
     return (
       <div className="cat-page">
         <div className="cat-state">불러오는 중…</div>
@@ -43,7 +44,6 @@ export default function BookCreate() {
         <p>본문 내용은 AI 표지 생성의 바탕이 돼요</p>
       </div>
       <BookForm
-        genres={genres}
         initial={{ title: '', author: '', genreCode: '', content: '' }}
         submitLabel="등록하기"
         submitting={submitting}

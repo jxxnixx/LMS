@@ -1,19 +1,32 @@
-// 대분류 코드별 디자인 토큰 — label + 브랜드 컬러 하나만 의도적으로 지정한다.
-// 책등 팔레트(spines)는 이 베이스 컬러에서 HSL 톤 변주로 자동 생성한다.
-const GENRE_TOKENS = {
-  NV: { label: '소설', color: '#6d4c8f' },
-  PO: { label: '시', color: '#b14d72' },
-  ES: { label: '에세이', color: '#c07f3a' },
-  DI: { label: '일기', color: '#3f8a82' },
-  HU: { label: '인문/교양', color: '#4a5a99' },
-  SH: { label: '자기계발', color: '#4f8a5a' },
-  EC: { label: '경제/경영', color: '#4b5b66' },
-  HB: { label: '취미/실용', color: '#b06a4e' },
-  CM: { label: '만화/웹툰', color: '#c0584e' },
-}
-
-const FALLBACK = { label: '', color: '#8a8a8a' }
+const FALLBACK_COLOR = '#8a8a8a'
 const SPINE_COUNT = 5
+
+const PALETTE = [
+  '#6d4c8f',
+  '#b14d72',
+  '#c07f3a',
+  '#3f8a82',
+  '#4a5a99',
+  '#4f8a5a',
+  '#4b5b66',
+  '#b06a4e',
+  '#c0584e',
+  '#2d7d9a',
+  '#5c6b2f',
+  '#7a4f3d',
+  '#8b6eb5',
+  '#d46a8f',
+  '#dba256',
+  '#5aab9e',
+  '#6a7eb8',
+  '#72a87a',
+  '#6a7a82',
+  '#d08a6e',
+  '#d8786e',
+  '#4a9bb8',
+  '#7a8f4a',
+  '#9a6f5d',
+]
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 
@@ -60,37 +73,66 @@ function hslToHex(h, s, l) {
   return `#${hex(r)}${hex(g)}${hex(b)}`
 }
 
-// 베이스 색에서 책등 톤 변주 n개 생성 (명도 중심, 채도·색상 미세 변주)
 function makeSpines(hex, n = SPINE_COUNT) {
   const { h, s, l } = hexToHsl(hex)
   return Array.from({ length: n }, (_, i) => {
-    const t = n === 1 ? 0 : i / (n - 1) - 0.5 // -0.5 .. 0.5
+    const t = n === 1 ? 0 : i / (n - 1) - 0.5
     return hslToHex(h + t * 10, s + t * 8, l + t * 26)
   })
 }
 
-// 장르당 1회 계산해 캐시
-const themeCache = {}
+function topCodeOf(code) {
+  return (code || '').split('-')[0]
+}
 
-export function themeOf(code) {
-  const top = (code || '').split('-')[0]
-  if (!themeCache[top]) {
-    const token = GENRE_TOKENS[top] || FALLBACK
-    themeCache[top] = {
-      label: token.label,
-      color: token.color,
-      spines: makeSpines(token.color),
+function emptyTheme(topCode = '') {
+  return { label: '', color: FALLBACK_COLOR, spines: makeSpines(FALLBACK_COLOR) }
+}
+
+/** genres 로드 시 1회 — Map 조회 + theme/label 캐시 */
+export function buildGenreIndex(genres) {
+  const list = genres ?? []
+  const byCode = new Map(list.map((g) => [g.code, g]))
+  const subsByTop = new Map()
+  const colorByTop = new Map()
+  const themeCache = new Map()
+  const tops = []
+
+  for (const g of list) {
+    if (g.parentCode) {
+      if (!subsByTop.has(g.parentCode)) subsByTop.set(g.parentCode, [])
+      subsByTop.get(g.parentCode).push(g)
+    } else if (!colorByTop.has(g.code)) {
+      tops.push(g.code)
+      colorByTop.set(g.code, PALETTE[(tops.length - 1) % PALETTE.length])
     }
   }
-  return themeCache[top]
+
+  function themeFor(code) {
+    const topCode = topCodeOf(code)
+    if (!topCode) return emptyTheme()
+    if (themeCache.has(topCode)) return themeCache.get(topCode)
+    const color = colorByTop.get(topCode) ?? FALLBACK_COLOR
+    const top = byCode.get(topCode)
+    const theme = {
+      label: top?.label ?? '',
+      color,
+      spines: makeSpines(color),
+    }
+    themeCache.set(topCode, theme)
+    return theme
+  }
+
+  function labelFor(code) {
+    if (!code) return ''
+    const sub = byCode.get(code)
+    if (!sub) return code
+    if (!sub.parentCode) return sub.label
+    const top = byCode.get(sub.parentCode)
+    return top ? `${top.label} · ${sub.label}` : sub.label
+  }
+
+  return { byCode, subsByTop, colorByTop, tops, themeFor, labelFor }
 }
 
-// 장르 코드 → "대분류 · 세부장르" 표시 텍스트
-export function genreLabel(genres, code) {
-  if (!genres || genres.length === 0) return code || ''
-  const sub = genres.find((g) => g.code === code)
-  if (!sub) return code || ''
-  if (!sub.parentCode) return sub.label
-  const top = genres.find((g) => g.code === sub.parentCode)
-  return top ? `${top.label} · ${sub.label}` : sub.label
-}
+export const EMPTY_GENRE_INDEX = buildGenreIndex([])

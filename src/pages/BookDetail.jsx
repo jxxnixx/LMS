@@ -2,19 +2,18 @@ import { useState, useEffect } from "react";
 import {
   useParams,
   useNavigate,
-  useOutletContext,
   Link,
 } from "react-router-dom";
 import { getBook, updateBook, deleteBook, generateCover } from "../api/books";
 import { buildPrompt } from "../api/imageGen";
-import { genreLabel, themeOf } from "../theme";
+import { useGenres } from "../context/GenreContext";
 
 const fmtDate = (s) => (s ? s.slice(0, 10).replace(/-/g, ".") : "-");
 
 export default function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { genres } = useOutletContext();
+  const { themeFor, labelFor } = useGenres();
 
   const [book, setBook] = useState(null);
   const [error, setError] = useState(null);
@@ -128,7 +127,7 @@ export default function BookDetail() {
     );
   }
 
-  const t = themeOf(book.genreCode);
+  const t = themeFor(book.genreCode);
 
   return (
     <div className='cat-page'>
@@ -156,7 +155,7 @@ export default function BookDetail() {
           <span
             className='detail-genre'
             style={{ color: t.color, background: `${t.color}18` }}>
-            {genreLabel(genres, book.genreCode)}
+            {labelFor(book.genreCode)}
           </span>
           <h2>{book.title}</h2>
           <p className='detail-author'>✍️ {book.author}</p>

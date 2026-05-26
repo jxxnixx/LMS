@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { useOutletContext } from 'react-router-dom'
 import { getBooks } from '../api/books'
-import { genreLabel } from '../theme'
 import BookCard from '../components/BookCard'
+import { useGenres } from '../context/GenreContext'
 import { fetchRecommendations } from '../api/recommend'
 
 const REC_CACHE_KEY = 'lms_recommendations'
@@ -29,7 +28,7 @@ function formatNextRefresh(ts) {
 }
 
 export default function Bookshelf() {
-  const { genres } = useOutletContext()
+  const { genres, ready } = useGenres()
   const [books, setBooks] = useState(null)
   const [error, setError] = useState(null)
 
@@ -47,7 +46,7 @@ export default function Bookshelf() {
 
   useEffect(() => {
     if (recFetched.current) return
-    if (!books || genres.length === 0) return
+    if (!books || !ready) return
     recFetched.current = true
 
     const cached = getCached()
@@ -69,7 +68,7 @@ export default function Bookshelf() {
       })
       .catch(e => setRecError(e.message ?? '추천 도서를 불러오지 못했습니다.'))
       .finally(() => setRecLoading(false))
-  }, [books, genres])
+  }, [books, genres, ready])
 
   const handleForceRefresh = () => {
     if (!books || books.length === 0) return
@@ -107,11 +106,7 @@ export default function Bookshelf() {
       {books && books.length > 0 && (
         <div className="book-grid">
           {books.map((b) => (
-            <BookCard
-              key={b.id}
-              book={b}
-              genreText={genreLabel(genres, b.genreCode)}
-            />
+            <BookCard key={b.id} book={b} />
           ))}
         </div>
       )}

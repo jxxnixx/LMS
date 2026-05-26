@@ -1,13 +1,15 @@
+import { useGenres } from '../context/GenreContext'
+
 // 대분류 → 세부장르 연동 셀렉트. variant: 'pill'(툴바) | 'field'(폼)
 export default function GenreSelect({
-  genres,
   topCode,
   subCode,
   onChange,
   variant = 'field',
 }) {
+  const { genres, subsOf } = useGenres()
   const tops = genres.filter((g) => !g.parentCode)
-  const subs = genres.filter((g) => g.parentCode === topCode)
+  const subs = subsOf(topCode)
   const cls = `gs-select ${variant === 'pill' ? 'gs-pill' : 'gs-field'}`
 
   return (

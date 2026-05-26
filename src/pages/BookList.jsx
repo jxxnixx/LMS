@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useOutletContext } from 'react-router-dom'
 import { getBooks } from '../api/books'
-import { genreLabel } from '../theme'
 import BookCard from '../components/BookCard'
 import GenreSelect from '../components/GenreSelect'
 
 const ITEMS_PER_PAGE = 10
 
 export default function BookList() {
-  const { genres } = useOutletContext()
   const [books, setBooks] = useState(null)
   const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
@@ -68,7 +65,6 @@ export default function BookList() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <GenreSelect
-          genres={genres}
           topCode={topCode}
           subCode={subCode}
           onChange={(top, sub) => {
@@ -108,11 +104,7 @@ export default function BookList() {
         <>
           <div className="book-grid">
             {paginated.map((b) => (
-              <BookCard
-                key={b.id}
-                book={b}
-                genreText={genreLabel(genres, b.genreCode)}
-              />
+              <BookCard key={b.id} book={b} />
             ))}
           </div>
 

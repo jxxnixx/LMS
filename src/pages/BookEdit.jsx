@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, useOutletContext } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { getBook, updateBook } from '../api/books'
+import { useGenres } from '../context/GenreContext'
 import BookForm from '../components/BookForm'
 
 export default function BookEdit() {
   const { id } = useParams()
-  const { genres } = useOutletContext()
+  const { ready } = useGenres()
   const navigate = useNavigate()
 
   const [book, setBook] = useState(null)
@@ -38,7 +39,7 @@ export default function BookEdit() {
       </div>
     )
   }
-  if (!book || genres.length === 0) {
+  if (!book || !ready) {
     return (
       <div className="cat-page">
         <div className="cat-state">불러오는 중…</div>
@@ -53,7 +54,6 @@ export default function BookEdit() {
         <p>{book.title}</p>
       </div>
       <BookForm
-        genres={genres}
         initial={{
           title: book.title,
           author: book.author,
