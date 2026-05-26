@@ -1,9 +1,9 @@
 import { useForm, Controller } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useGenres } from "../context/GenreContext";
 import GenreSelect from "./GenreSelect";
 
 export default function BookForm({
-  genres,
   initial,
   submitLabel,
   submitting,
@@ -11,7 +11,8 @@ export default function BookForm({
   onSubmit,
   cancelTo,
 }) {
-  const initialSub = genres.find((g) => g.code === initial.genreCode);
+  const { get } = useGenres();
+  const initialSub = get(initial.genreCode);
 
   const {
     register,
@@ -93,7 +94,6 @@ export default function BookForm({
           rules={{ required: "장르를 선택해주세요." }}
           render={({ field }) => (
             <GenreSelect
-              genres={genres}
               topCode={topCodeValue}
               subCode={field.value}
               onChange={(top, sub) => {

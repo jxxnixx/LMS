@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
-import { themeOf } from '../theme'
+import { useGenres } from '../context/GenreContext'
 
 const fmtDate = (s) => (s ? s.slice(0, 10).replace(/-/g, '.') : '')
 
-export default function BookCard({ book, genreText }) {
-  const t = themeOf(book.genreCode)
+export default function BookCard({ book }) {
+  const { themeFor, labelFor } = useGenres()
+  const t = themeFor(book.genreCode)
 
   return (
     <Link to={`/books/${book.id}`} className="book-card">
@@ -27,7 +28,7 @@ export default function BookCard({ book, genreText }) {
           className="card-genre"
           style={{ color: t.color, background: `${t.color}14` }}
         >
-          {genreText}
+          {labelFor(book.genreCode)}
         </span>
         <h3>{book.title}</h3>
         <p>{book.author} · {fmtDate(book.createdAt)}</p>
