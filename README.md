@@ -20,18 +20,31 @@
 ### 1. 3D 도서관 복도 탐색 (Experience)
 * 무거운 WebGL 없이 CSS 3D Transforms와 Framer Motion만을 조합하여 가상 공간의 깊이감과 원근감 구현.
 * 11개 상위 장르별 브랜드 컬러를 부여하고, 사용자의 선택에 따라 복도 뷰 ⇄ 책장 뷰가 심리스(Seamless)하게 전환.
+* ![image.png](attachment:d7d75e73-6329-43e4-949c-80285ed3eed8:image.png)
+* ![스크린샷 2026-05-26 오후 3.11.26.png](attachment:a2cd833e-96a8-43f5-ba53-d65a9bdeb4bb:스크린샷_2026-05-26_오후_3.11.26.png)
 
 ### 2. 지능형 도서 탐색 및 CRUD (Management)
 * **실시간 검색:** 250ms 디바운스(Debounce) 처리를 통한 고효율 제목 검색.
 * **정밀 필터링:** 상/하위 장르 및 '좋아요' 계층형 필터 시스템.
 * **통합 관리:** React-Hook-Form 기반의 도서 등록/수정/삭제 폼 유효성 검사 및 상태 관리.
+* ![image.png](attachment:4dc4a8fc-7d10-4fdc-a1ef-0e244e76dddd:image.png)
+* ![image.png](attachment:d3b2be0a-cb7f-4c1f-be71-bdc90fa52988:image.png)
+* ![image.png](attachment:02c16ef0-c29d-4c60-9811-37ed3a1ad659:image.png)
 
 ### 3. 생성형 AI 통합 시스템 (AI Integration)
 * **AI 표지 생성:** OpenAI `gpt-image-1` 모델과 구조화된 프롬프트(Structured Prompt)를 활용해 도서 메타데이터 기반 1024x1536 고해상도 표지 자동 제작 (품질 3단계 제어).
 * **개인화 맞춤 추천:** '내 책장(좋아요)' 데이터를 바탕으로 `gpt-4o-mini`가 취향을 분석하고, Vite Proxy를 통해 CORS 문제를 우회한 **Naver Book Search API**와 연동하여 실제 도서 6권을 매핑 및 추천.
+* ![image.png](attachment:05b19af8-2dfc-49f6-9264-1ceb91db6130:image.png)
+* ![image.png](attachment:4406402e-11bd-4d40-b82d-e2e8c066ede0:image.png)
 
 ## 🚀 실행 방법
 
 ### 1. 패키지 설치
 ```bash
 npm install
+```
+
+### 2. 실행
+```bash
+npm run dev
+```
