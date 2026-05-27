@@ -1,16 +1,50 @@
-# React + Vite
+# 📚 3D 몰입형 디지털 도서관 (LMS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+단순한 리스트 형태를 탈피하여, 사용자가 실제 도서관을 걷는 듯한 경험을 제공하는 **3D 기반 지능형 도서 관리 시스템**입니다. 프레이머 모션(Framer Motion)을 활용한 시각적 몰입감과, 생성형 AI를 활용한 도서 표지 생성 및 맞춤형 추천 기능을 제공합니다.
 
-Currently, two official plugins are available:
+## 👥 팀원 소개 (AI_16조)
+* **조장 / UI:** 김연주 (요구사항 정의, 기능 명세서 작성, Git 관리)
+* **PM / 기획:** 장봉경 (기능 명세서, 프로젝트 문서화)
+* **CRUD 연동:** 권오현, 류지후
+* **OpenAI 연동:** 조승대
+* **스타일링 & QA:** 강민수
+* **발표 & 문서화:** 김경순
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠 기술 스택
+* **FrontEnd:** React 19, Vite, Framer Motion, React-Router-DOM, React-Hook-Form
+* **BackEnd (Mock):** json-server
+* **External API:** OpenAI API (gpt-image-1, gpt-4o-mini), Naver Book Search API
 
-## React Compiler
+## ✨ 핵심 기능
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. 3D 도서관 복도 탐색 (Experience)
+* 무거운 WebGL 없이 CSS 3D Transforms와 Framer Motion만을 조합하여 가상 공간의 깊이감과 원근감 구현.
+* 11개 상위 장르별 브랜드 컬러를 부여하고, 사용자의 선택에 따라 복도 뷰 ⇄ 책장 뷰가 심리스(Seamless)하게 전환.
+* ![image.png](attachment:d7d75e73-6329-43e4-949c-80285ed3eed8:image.png)
+* ![스크린샷 2026-05-26 오후 3.11.26.png](attachment:a2cd833e-96a8-43f5-ba53-d65a9bdeb4bb:스크린샷_2026-05-26_오후_3.11.26.png)
 
-## Expanding the ESLint configuration
+### 2. 지능형 도서 탐색 및 CRUD (Management)
+* **실시간 검색:** 250ms 디바운스(Debounce) 처리를 통한 고효율 제목 검색.
+* **정밀 필터링:** 상/하위 장르 및 '좋아요' 계층형 필터 시스템.
+* **통합 관리:** React-Hook-Form 기반의 도서 등록/수정/삭제 폼 유효성 검사 및 상태 관리.
+* ![image.png](attachment:4dc4a8fc-7d10-4fdc-a1ef-0e244e76dddd:image.png)
+* ![image.png](attachment:d3b2be0a-cb7f-4c1f-be71-bdc90fa52988:image.png)
+* ![image.png](attachment:02c16ef0-c29d-4c60-9811-37ed3a1ad659:image.png)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 3. 생성형 AI 통합 시스템 (AI Integration)
+* **AI 표지 생성:** OpenAI `gpt-image-1` 모델과 구조화된 프롬프트(Structured Prompt)를 활용해 도서 메타데이터 기반 1024x1536 고해상도 표지 자동 제작 (품질 3단계 제어).
+* **개인화 맞춤 추천:** '내 책장(좋아요)' 데이터를 바탕으로 `gpt-4o-mini`가 취향을 분석하고, Vite Proxy를 통해 CORS 문제를 우회한 **Naver Book Search API**와 연동하여 실제 도서 6권을 매핑 및 추천.
+* ![image.png](attachment:05b19af8-2dfc-49f6-9264-1ceb91db6130:image.png)
+* ![image.png](attachment:4406402e-11bd-4d40-b82d-e2e8c066ede0:image.png)
+
+## 🚀 실행 방법
+
+### 1. 패키지 설치
+```bash
+npm install
+```
+
+### 2. 실행
+```bash
+npm run dev
+```
