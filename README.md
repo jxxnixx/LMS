@@ -37,14 +37,29 @@
 <img width="976" height="843" alt="스크린샷 2026-05-26 오후 3 16 04" src="https://github.com/user-attachments/assets/16175968-ec48-4fad-8045-77ce93f826b6" />
 <img width="654" height="836" alt="스크린샷 2026-05-26 오후 3 17 06" src="https://github.com/user-attachments/assets/13e7d681-3369-4b0a-abfb-09896bb8d57a" />
 
+### 4. ⚙️ 구현 내용 및 트러블 슈팅
+
+
+* **AI 출력 일관성 확보:** AI 표지 생성 시 디자인이 틀어지는 문제를 방지하고자, 장르별 시각 묘사 및 레이아웃을 강제하는 'Structured Prompt Builder' 로직을 적용했습니다.
+* **API 보안 및 CORS 우회:** Naver API 연동 시 브라우저 정책 충돌 및 키 노출을 방지하기 위해 Vite Proxy 서버를 구축하여 안전하게 API 통신을 수행했습니다.
+
 ## 🚀 실행 방법
 
-### 1. 패키지 설치
+### 1. 레포지토리 클론 및 패키지 설치
 ```bash
+git clone [https://github.com/jxxnixx/LMS.git](https://github.com/jxxnixx/LMS.git)
+cd LMS
 npm install
+npm install json-server@0.17.4
 ```
 
-### 2. 실행
-```bash
+### 2. 환경 변수 (API Key) 설정
+api키가 입력되어있는 .env 파일을 이용
+
+### 3. 서버 실행 (터미널 2개 필요)
+``` 
+#터미널 1: 백엔드 모킹 서버 실행
+npx json-server --watch db.json
+
+#터미널 2: 프론트엔드 개발 서버 실행
 npm run dev
-```
