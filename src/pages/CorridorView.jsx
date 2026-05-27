@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, Fragment } from "react";
 import { motion } from "framer-motion";
-import { getBooks } from "../api/books"; // 경로 확인 필요
-import { useGenres } from "../context/GenreContext"; // 경로 확인 필요
+import { getBooks } from "../api/books";
+import { useGenres } from "../context/GenreContext";
 import { Panel, DummyPanel } from "../components/Panel";
 import { SEG, CARPET_W, ROWS } from "../constants/corridor";
 
@@ -57,25 +57,17 @@ export default function CorridorView({ onOpenShelf }) {
       const target = left.length <= right.length ? left : right;
       target.push(...g);
     }
-    const rows = [];
     const n = Math.max(left.length, right.length);
-    for (let i = 0; i < n; i++) {
-      rows.push({ left: left[i] || null, right: right[i] || null });
-    }
-    return rows;
+    return Array.from({ length: n }, (_, i) => ({
+      left: left[i] || null,
+      right: right[i] || null,
+    }));
   }, [bookcases]);
 
-  const DUMMY_COUNT = 14;
+  const DUMMY_COUNT = 0;
   const totalSegments = segments.length + DUMMY_COUNT;
   const maxStep = Math.max(0, segments.length - 1);
   const totalCorridorLen = Math.max(totalSegments, 1) * SEG;
-
-  const distance = totalSegments - step;
-  const fogScale = totalSegments / distance;
-  const baseStart = 5;
-  const baseEnd = 13;
-  const fogStart = baseStart * fogScale;
-  const fogEnd = baseEnd * fogScale;
 
   const forward = useCallback(
     () => setStep((s) => Math.min(maxStep, s + 1)),
@@ -136,16 +128,6 @@ export default function CorridorView({ onOpenShelf }) {
               />
             </Fragment>
           ))}
-
-          {[...Array(DUMMY_COUNT)].map((_, i) => {
-            const dummyIndex = segments.length + i;
-            return (
-              <Fragment key={`dummy-${i}`}>
-                <DummyPanel side='left' segIndex={dummyIndex} />
-                <DummyPanel side='right' segIndex={dummyIndex} />
-              </Fragment>
-            );
-          })}
         </motion.div>
 
         {error && (

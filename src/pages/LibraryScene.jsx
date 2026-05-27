@@ -3,12 +3,11 @@ import { AnimatePresence } from 'framer-motion'
 import CorridorView from './CorridorView'
 import ShelfView from './ShelfView'
 
-// 1인칭 3D 복도 도서관 — 복도 ⇄ 책장 전환
 export default function LibraryScene() {
   const [activeGenre, setActiveGenre] = useState(null)
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode='wait'>
       {activeGenre ? (
         <ShelfView
           key={activeGenre.code}
@@ -16,7 +15,7 @@ export default function LibraryScene() {
           onBack={() => setActiveGenre(null)}
         />
       ) : (
-        <CorridorView key="corridor" onOpenShelf={setActiveGenre} />
+        <CorridorView key='corridor' onOpenShelf={setActiveGenre} />
       )}
     </AnimatePresence>
   )
