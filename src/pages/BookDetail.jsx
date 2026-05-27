@@ -188,6 +188,7 @@ export default function BookDetail() {
           {aiOpen && (
             <div className='ai-panel'>
               <h4>✨ AI 표지 생성</h4>
+              <p className='ai-notice'>⚠ 표지 생성 시 OpenAI API 비용이 발생합니다. 생성 전 확인해 주세요.</p>
               <div className='ai-row'>
                 <label>OpenAI API Key</label>
                 <input

@@ -44,7 +44,28 @@
 npm install
 ```
 
-### 2. 실행
+### 2. 환경 변수 설정
+프로젝트 루트에 `.env` 파일을 생성하고 아래 내용을 입력합니다.
+```
+VITE_OPENAI_API_KEY=sk-...
+VITE_NAVER_CLIENT_ID=...
+VITE_NAVER_CLIENT_SECRET=...
+```
+
+### 3. 개발 서버 실행 (터미널 2개 필요)
 ```bash
+# 터미널 1 — Mock API 서버
+npm run server
+
+# 터미널 2 — React 앱
 npm run dev
 ```
+
+### 4. AI 표지 생성 사용법
+1. 도서 상세 페이지 진입
+2. **✨ AI 표지 생성** 버튼 클릭
+3. OpenAI API Key 입력 (`sk-...` 형식, 조별 키 사용)
+4. 품질 선택 후 **표지 생성하기** 클릭
+5. 미리보기 확인 후 **이 표지로 저장** 클릭
+
+> ⚠ 표지 생성 시 OpenAI API 비용이 발생합니다.

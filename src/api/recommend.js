@@ -34,22 +34,15 @@ async function getGptRecommendations(likedBooks, genres) {
 
 export async function fetchRecommendations(likedBooks, genres) {
   const gptRecs = await getGptRecommendations(likedBooks, genres)
-  console.log('[추천] GPT 결과:', gptRecs)
 
   const settled = await Promise.allSettled(
     gptRecs.map(rec => searchNaverBooks(rec.title, 1))
   )
-
-  settled.forEach((r, i) => {
-    if (r.status === 'rejected') console.warn(`[추천] 네이버 검색 실패 (${gptRecs[i]?.title}):`, r.reason)
-    else console.log(`[추천] 네이버 결과 (${gptRecs[i]?.title}):`, r.value?.items?.length, '건')
-  })
 
   const results = settled
     .filter(r => r.status === 'fulfilled' && r.value.items?.length > 0)
     .map(r => r.value.items[0])
     .slice(0, 3)
 
-  console.log('[추천] 최종 결과:', results.length, '권')
   return results
 }

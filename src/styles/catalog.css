@@ -514,6 +514,15 @@
   font-size: 12.5px;
   color: #4a44b8;
 }
+.ai-notice {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  background: #fff8e1;
+  border-left: 3px solid #f59e0b;
+  border-radius: 4px;
+  font-size: 12.5px;
+  color: #92600a;
+}
 .ai-error {
   margin-top: 9px;
   font-size: 12.5px;
