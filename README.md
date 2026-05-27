@@ -34,7 +34,7 @@
 ### 3. 생성형 AI 통합 시스템 (AI Integration)
 * **AI 표지 생성:** OpenAI `gpt-image-1` 모델과 구조화된 프롬프트(Structured Prompt)를 활용해 도서 메타데이터 기반 1024x1536 고해상도 표지 자동 제작 (품질 3단계 제어).
 * **개인화 맞춤 추천:** '내 책장(좋아요)' 데이터를 바탕으로 `gpt-4o-mini`가 취향을 분석하고, Vite Proxy를 통해 CORS 문제를 우회한 **Naver Book Search API**와 연동하여 실제 도서 6권을 매핑 및 추천.
-* <img width="976" height="843" alt="스크린샷 2026-05-26 오후 3 16 04" src="https://github.com/user-attachments/assets/16175968-ec48-4fad-8045-77ce93f826b6" />
+<img width="976" height="843" alt="스크린샷 2026-05-26 오후 3 16 04" src="https://github.com/user-attachments/assets/16175968-ec48-4fad-8045-77ce93f826b6" />
 <img width="654" height="836" alt="스크린샷 2026-05-26 오후 3 17 06" src="https://github.com/user-attachments/assets/13e7d681-3369-4b0a-abfb-09896bb8d57a" />
 
 ## 🚀 실행 방법
