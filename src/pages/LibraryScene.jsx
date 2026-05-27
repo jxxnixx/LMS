@@ -8,7 +8,7 @@ export default function LibraryScene() {
   const [activeGenre, setActiveGenre] = useState(null);
 
   return (
-    <>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <CorridorView onOpenShelf={setActiveGenre} hidden={!!activeGenre} />
       <AnimatePresence>
         {activeGenre && (
@@ -19,6 +19,6 @@ export default function LibraryScene() {
           />
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }
