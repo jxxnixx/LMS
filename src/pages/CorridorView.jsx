@@ -1,16 +1,14 @@
-import { useState, useEffect, useCallback, useMemo, Fragment } from "react";
-import { motion } from "framer-motion";
-import { getBooks } from "../api/books"; // 경로 확인 필요
-import { useGenres } from "../context/GenreContext"; // 경로 확인 필요
-import { Panel, DummyPanel } from "../components/Panel";
+import { useState, useEffect, useCallback, useMemo, useRef, Fragment } from "react";
+import { getBooks } from "../api/books";
+import { useGenres } from "../context/GenreContext";
+import { Panel } from "../components/Panel";
 import { SEG, CARPET_W, ROWS } from "../constants/corridor";
 
-export default function CorridorView({ onOpenShelf }) {
+export default function CorridorView({ onOpenShelf, hidden = false }) {
   const { genres, ready } = useGenres();
   const [books, setBooks] = useState(null);
   const [error, setError] = useState(null);
   const [step, setStep] = useState(0);
-  const [activeTip, setActiveTip] = useState(null);
 
   useEffect(() => {
     getBooks()
@@ -65,17 +63,8 @@ export default function CorridorView({ onOpenShelf }) {
     return rows;
   }, [bookcases]);
 
-  const DUMMY_COUNT = 14;
-  const totalSegments = segments.length + DUMMY_COUNT;
   const maxStep = Math.max(0, segments.length - 1);
-  const totalCorridorLen = Math.max(totalSegments, 1) * SEG;
-
-  const distance = totalSegments - step;
-  const fogScale = totalSegments / distance;
-  const baseStart = 5;
-  const baseEnd = 13;
-  const fogStart = baseStart * fogScale;
-  const fogEnd = baseEnd * fogScale;
+  const totalCorridorLen = Math.max(segments.length, 1) * SEG;
 
   const forward = useCallback(
     () => setStep((s) => Math.min(maxStep, s + 1)),
@@ -83,27 +72,34 @@ export default function CorridorView({ onOpenShelf }) {
   );
   const back = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
 
+  const maxStepRef = useRef(maxStep);
+  useEffect(() => {
+    maxStepRef.current = maxStep;
+  }, [maxStep]);
   useEffect(() => {
     const onKey = (e) => {
-      if (["ArrowUp", "w", "W"].includes(e.key)) forward();
-      if (["ArrowDown", "s", "S"].includes(e.key)) back();
+      if (["ArrowUp", "w", "W"].includes(e.key)) {
+        setStep((s) => Math.min(maxStepRef.current, s + 1));
+      } else if (["ArrowDown", "s", "S"].includes(e.key)) {
+        setStep((s) => Math.max(0, s - 1));
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [forward, back]);
+  }, []);
 
   return (
-    <motion.div
+    <div
       className='corridor-root'
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}>
+      style={{
+        visibility: hidden ? 'hidden' : 'visible',
+        pointerEvents: hidden ? 'none' : 'auto',
+      }}>
       <div className='scene'>
-        <motion.div
+        {/* CSS transition으로 GPU 애니메이션 — Framer Motion JS 루프 대신 */}
+        <div
           className='world'
-          animate={{ z: step * SEG }}
-          transition={{ type: "spring", stiffness: 58, damping: 17, mass: 1 }}>
+          style={{ transform: `translateZ(${step * SEG}px)` }}>
           <div
             className='corridor-floor'
             style={{
@@ -124,7 +120,6 @@ export default function CorridorView({ onOpenShelf }) {
                 side='left'
                 segIndex={i}
                 onOpenSub={onOpenShelf}
-                setActiveTip={setActiveTip}
               />
               <Panel
                 bookcase={seg.right}
@@ -132,21 +127,11 @@ export default function CorridorView({ onOpenShelf }) {
                 side='right'
                 segIndex={i}
                 onOpenSub={onOpenShelf}
-                setActiveTip={setActiveTip}
               />
             </Fragment>
           ))}
 
-          {[...Array(DUMMY_COUNT)].map((_, i) => {
-            const dummyIndex = segments.length + i;
-            return (
-              <Fragment key={`dummy-${i}`}>
-                <DummyPanel side='left' segIndex={dummyIndex} />
-                <DummyPanel side='right' segIndex={dummyIndex} />
-              </Fragment>
-            );
-          })}
-        </motion.div>
+        </div>
 
         {error && (
           <div className='scene-msg'>
@@ -157,14 +142,6 @@ export default function CorridorView({ onOpenShelf }) {
         )}
         {!ready && !error && <div className='scene-msg'>불러오는 중…</div>}
       </div>
-
-      {activeTip && (
-        <span
-          className='bc-tip'
-          style={{ left: activeTip.x, top: activeTip.y }}>
-          {activeTip.label}
-        </span>
-      )}
 
       <div className='corridor-nav'>
         <button className='nav-arrow' onClick={back} disabled={step === 0}>
@@ -187,6 +164,6 @@ export default function CorridorView({ onOpenShelf }) {
         </button>
       </div>
       <p className='nav-hint'>W / S · ↑ / ↓ · 또는 화살표 버튼으로 앞뒤 이동</p>
-    </motion.div>
+    </div>
   );
 }

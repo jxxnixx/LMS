@@ -1,23 +1,24 @@
-import { useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
-import CorridorView from './CorridorView'
-import ShelfView from './ShelfView'
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import CorridorView from "./CorridorView";
+import ShelfView from "./ShelfView";
 
-// 1인칭 3D 복도 도서관 — 복도 ⇄ 책장 전환
+// CorridorView는 한 번만 마운트하고 ShelfView를 위에 겹친다 (재진입 시 트리 재구축 회피)
 export default function LibraryScene() {
-  const [activeGenre, setActiveGenre] = useState(null)
+  const [activeGenre, setActiveGenre] = useState(null);
 
   return (
-    <AnimatePresence mode="wait">
-      {activeGenre ? (
-        <ShelfView
-          key={activeGenre.code}
-          genre={activeGenre}
-          onBack={() => setActiveGenre(null)}
-        />
-      ) : (
-        <CorridorView key="corridor" onOpenShelf={setActiveGenre} />
-      )}
-    </AnimatePresence>
-  )
+    <>
+      <CorridorView onOpenShelf={setActiveGenre} hidden={!!activeGenre} />
+      <AnimatePresence>
+        {activeGenre && (
+          <ShelfView
+            key={activeGenre.code}
+            genre={activeGenre}
+            onBack={() => setActiveGenre(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
 }

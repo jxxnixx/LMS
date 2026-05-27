@@ -1,5 +1,14 @@
 import { BOOK_AREA, GAP, ROW_FILL, DUMMY_COLORS } from "../constants/corridor";
 
+// filter: brightness() 대신 사용 — GPU 컴포지팅 레이어 생성 방지
+export function applyShade(hex, shade) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.min(255, Math.round(((n >> 16) & 0xff) * shade));
+  const g = Math.min(255, Math.round(((n >> 8) & 0xff) * shade));
+  const b = Math.min(255, Math.round((n & 0xff) * shade));
+  return `rgb(${r},${g},${b})`;
+}
+
 // ── ✨ 실제 책 크기 & 명암 결정 (들쭉날쭉하게!) ──
 export function spineSize(book, index) {
   const titleLen = [...book.title].length;
