@@ -1,34 +1,20 @@
-import { useState } from "react";
+import { memo, useMemo } from "react";
 import { useGenres } from "../context/GenreContext";
 import { ROWS } from "../constants/corridor";
-import { fillRow } from "../utils/bookUtils";
+import { fillRow, applyShade } from "../utils/bookUtils";
 
-// ── 한 단(소분류) ──
-function ShelfRow({ sub, books, palette, onOpen, setActiveTip }) {
-  const [hover, setHover] = useState(false);
+const ShelfRow = memo(function ShelfRow({ sub, books, palette, side, onOpen }) {
   const active = !!sub;
-  const spines = active ? fillRow(books) : [];
-
-  const moveTip = (e) => {
-    if (!active) return;
-    setActiveTip({ label: sub.label, x: e.clientX, y: e.clientY });
-  };
+  const spines = useMemo(() => (active ? fillRow(books) : []), [active, books]);
 
   return (
     <div className='bc-row'>
       <div
-        className={`bc-space ${hover ? "on" : ""} ${active ? "" : "is-empty"}`}
-        onMouseEnter={(e) => {
-          if (!active) return;
-          setHover(true);
-          moveTip(e);
-        }}
-        onMouseLeave={() => {
-          setHover(false);
-          setActiveTip(null);
-        }}
-        onMouseMove={moveTip}
+        className={`bc-space ${active ? "" : "is-empty"}`}
         onClick={() => active && onOpen(sub)}>
+        {active && (
+          <div className={`row-sign row-sign--${side}`}>{sub.label}</div>
+        )}
         <div className='bc-books'>
           {spines.map((s, i) => (
             <div
@@ -37,8 +23,7 @@ function ShelfRow({ sub, books, palette, onOpen, setActiveTip }) {
               style={{
                 width: s.w,
                 height: s.h,
-                background: palette[i % palette.length],
-                filter: `brightness(${s.shade})`,
+                background: applyShade(palette[i % palette.length], s.shade),
               }}>
               <span className='bc-spine-title'>{s.book.title}</span>
             </div>
@@ -48,14 +33,13 @@ function ShelfRow({ sub, books, palette, onOpen, setActiveTip }) {
       <div className='bc-plank' />
     </div>
   );
-}
+});
 
-// ── 3D 책장 (실제 데이터) ──
-export default function Bookcase({
+const Bookcase = memo(function Bookcase({
   bookcase,
   booksByGenre,
+  side,
   onOpenSub,
-  setActiveTip,
 }) {
   const { themeFor } = useGenres();
   const t = themeFor(bookcase.top.code);
@@ -74,14 +58,16 @@ export default function Bookcase({
           <ShelfRow
             key={r}
             sub={sub}
+            side={side}
             books={sub ? booksByGenre[sub.code] || [] : []}
             palette={t.spines}
             onOpen={onOpenSub}
-            setActiveTip={setActiveTip}
           />
         ))}
       </div>
       <div className='bc-frame' />
     </div>
   );
-}
+});
+
+export default Bookcase;
