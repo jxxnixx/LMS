@@ -1,0 +1,2 @@
+# API 기본 URL (Spring Boot 백엔드)
+VITE_API_BASE_URL=http://localhost:8080

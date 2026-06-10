@@ -15,16 +15,24 @@ export const getBooksByGenre = (genreCode) =>
 export const createBook = (data) =>
   request('/books', { method: 'POST', ...jsonBody(data) })
 
-// 수정 (부분 갱신 — 좋아요 토글, 표지 저장 포함)
+// 수정 (부분 갱신 — 제목, 내용, 표지, 좋아요 등 일반 필드)
 export const updateBook = (id, patch) =>
   request(`/books/${id}`, { method: 'PATCH', ...jsonBody(patch) })
+
+// ★ [5차 추가] 표지 저장 (PATCH /books/{id}에서 coverImageUrl만 전송)
+export const updateBookCover = (id, coverImageUrl) =>
+  request(`/books/${id}`, { method: 'PATCH', ...jsonBody({ coverImageUrl }) })
+
+// ★ [5차 추가] 좋아요 토글 (PATCH /books/{id}/like)
+export const toggleLike = (id) =>
+  request(`/books/${id}/like`, { method: 'PATCH' })
 
 // 삭제
 export const deleteBook = (id) =>
   request(`/books/${id}`, { method: 'DELETE' })
 
 // ── OpenAI 표지 이미지 생성 ──
-// 생성된 이미지를 Data URL로 반환 → updateBook(id, { coverImageUrl }) 로 저장
+// 생성된 이미지를 Data URL로 반환 → updateBookCover(id, dataUrl) 로 저장
 export async function generateCover({ apiKey, prompt, quality = 'medium' }) {
   let res
   try {
@@ -53,3 +61,4 @@ export async function generateCover({ apiKey, prompt, quality = 'medium' }) {
   if (!b64) throw new Error('이미지 데이터를 받지 못했어요.')
   return `data:image/png;base64,${b64}`
 }
+

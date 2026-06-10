@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
+mport { useState, useEffect } from "react";
 import {
   useParams,
   useNavigate,
+  useOutletContext,
   Link,
 } from "react-router-dom";
-import { getBook, updateBook, deleteBook, generateCover } from "../api/books";
+import { getBook, updateBook, updateBookCover, toggleLike, deleteBook, generateCover } from "../api/books";
 import { buildPrompt } from "../api/imageGen";
-import { useGenres } from "../context/GenreContext";
+import { genreLabel, themeOf } from "../theme";
 
 const fmtDate = (s) => (s ? s.slice(0, 10).replace(/-/g, ".") : "-");
 
 export default function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { themeFor, labelFor } = useGenres();
+  const { genres } = useOutletContext();
 
   const [book, setBook] = useState(null);
   const [error, setError] = useState(null);
@@ -38,13 +39,11 @@ export default function BookDetail() {
       .catch((e) => setError(e.message));
   }, [id]);
 
-  async function toggleLike() {
+  // ★ [5차 변경] toggleLike 함수 수정
+  async function toggleLike_() {
     setBusy(true);
     try {
-      const updated = await updateBook(id, {
-        isLiked: !book.isLiked,
-        updatedAt: new Date().toISOString(),
-      });
+      const updated = await toggleLike(id);
       setBook(updated);
     } catch (e) {
       alert(e.message);
@@ -91,10 +90,7 @@ export default function BookDetail() {
   async function saveCover() {
     setBusy(true);
     try {
-      const updated = await updateBook(id, {
-        coverImageUrl: preview,
-        updatedAt: new Date().toISOString(),
-      });
+      const updated = await updateBookCover(id, preview);
       setBook(updated);
       setPreview("");
       setAiOpen(false);
@@ -114,7 +110,7 @@ export default function BookDetail() {
         <div className='cat-state'>
           책 정보를 불러오지 못했어요.
           <br />
-          <code>npm run server</code> 실행 여부를 확인하세요.
+          <code>Spring Boot 8080</code> 실행 여부를 확인하세요.
         </div>
       </div>
     );
@@ -127,7 +123,7 @@ export default function BookDetail() {
     );
   }
 
-  const t = themeFor(book.genreCode);
+  const t = themeOf(book.genreCode);
 
   return (
     <div className='cat-page'>
@@ -155,7 +151,7 @@ export default function BookDetail() {
           <span
             className='detail-genre'
             style={{ color: t.color, background: `${t.color}18` }}>
-            {labelFor(book.genreCode)}
+            {genreLabel(genres, book.genreCode)}
           </span>
           <h2>{book.title}</h2>
           <p className='detail-author'>✍️ {book.author}</p>
@@ -170,7 +166,7 @@ export default function BookDetail() {
             </button>
             <button
               className={`btn btn-like ${book.isLiked ? "on" : ""}`}
-              onClick={toggleLike}
+              onClick={toggleLike_}
               disabled={busy}>
               {book.isLiked ? "❤️ 책장에 담김" : "🤍 책장 담기"}
             </button>
@@ -188,7 +184,6 @@ export default function BookDetail() {
           {aiOpen && (
             <div className='ai-panel'>
               <h4>✨ AI 표지 생성</h4>
-              <p className='ai-notice'>⚠ 표지 생성 시 OpenAI API 비용이 발생합니다. 생성 전 확인해 주세요.</p>
               <div className='ai-row'>
                 <label>OpenAI API Key</label>
                 <input
