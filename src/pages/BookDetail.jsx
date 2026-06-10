@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { getBook, updateBook, updateBookCover, toggleLike, deleteBook, generateCover } from "../api/books";
 import { buildPrompt } from "../api/imageGen";
-import { genreLabel, themeOf } from "../theme";
+import { buildGenreIndex } from "../theme";
 
 const fmtDate = (s) => (s ? s.slice(0, 10).replace(/-/g, ".") : "-");
 
@@ -38,6 +38,9 @@ export default function BookDetail() {
       })
       .catch((e) => setError(e.message));
   }, [id]);
+
+  // ★ genres 인덱스 생성 (labelFor, themeFor 사용 가능)
+  const genreIndex = buildGenreIndex(genres);
 
   // ★ [5차 변경] toggleLike 함수 수정
   async function toggleLike_() {
@@ -123,7 +126,7 @@ export default function BookDetail() {
     );
   }
 
-  const t = themeOf(book.genreCode);
+  const t = genreIndex.themeFor(book.genreCode);
 
   return (
     <div className='cat-page'>
@@ -151,7 +154,7 @@ export default function BookDetail() {
           <span
             className='detail-genre'
             style={{ color: t.color, background: `${t.color}18` }}>
-            {genreLabel(genres, book.genreCode)}
+            {genreIndex.labelFor(book.genreCode)}
           </span>
           <h2>{book.title}</h2>
           <p className='detail-author'>✍️ {book.author}</p>
