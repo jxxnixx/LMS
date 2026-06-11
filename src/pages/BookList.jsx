@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
-import { getBooks } from '../api/books'
-import BookCard from '../components/BookCard'
-import GenreSelect from '../components/GenreSelect'
+import { getBooks } from '@/api/books'
+import BookCard from '@/components/book/BookCard'
+import GenreSelect from '@/components/book/GenreSelect'
+import StateMessage from '@/components/ui/StateMessage'
+import Page, { PageHeader } from '@/components/ui/Page'
+import Pagination from '@/components/ui/Pagination'
 
 const ITEMS_PER_PAGE = 10
 
@@ -50,11 +53,10 @@ export default function BookList() {
   const paginated = books ? books.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE) : []
 
   return (
-    <div className="cat-page">
-      <div className="cat-page-head">
-        <h2>전체 도서</h2>
-        <p>제목 · 장르로 찾아보거나 새 도서를 등록해 보세요</p>
-      </div>
+    <Page>
+      <PageHeader title="전체 도서">
+        제목 · 장르로 찾아보거나 새 도서를 등록해 보세요
+      </PageHeader>
 
       <div className="cat-toolbar">
         <input
@@ -90,15 +92,10 @@ export default function BookList() {
         </select>
       </div>
 
-      {error && (
-        <div className="cat-state">
-          json-server에 연결할 수 없어요.<br />
-          <code>npm run server</code> 실행 후 새로고침하세요.
-        </div>
-      )}
-      {!books && !error && <div className="cat-state">불러오는 중…</div>}
+      {error && <StateMessage status="server-error" />}
+      {!books && !error && <StateMessage status="loading" />}
       {books && books.length === 0 && (
-        <div className="cat-state">조건에 맞는 책이 없어요.</div>
+        <StateMessage>조건에 맞는 책이 없어요.</StateMessage>
       )}
       {books && books.length > 0 && (
         <>
@@ -108,27 +105,9 @@ export default function BookList() {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="cat-pagination">
-              <button className="page-btn" onClick={() => setPage(p => p - 1)} disabled={page === 1}>
-                이전
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                <button
-                  key={p}
-                  className={`page-btn${p === page ? ' active' : ''}`}
-                  onClick={() => setPage(p)}
-                >
-                  {p}
-                </button>
-              ))}
-              <button className="page-btn" onClick={() => setPage(p => p + 1)} disabled={page === totalPages}>
-                다음
-              </button>
-            </div>
-          )}
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </>
       )}
-    </div>
+    </Page>
   )
 }

@@ -1,4 +1,4 @@
-import { useGenres } from '../context/GenreContext'
+import { useGenres } from '@/context/GenreContext'
 
 // 대분류 → 세부장르 연동 셀렉트. variant: 'pill'(툴바) | 'field'(폼)
 export default function GenreSelect({

@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router-dom'
+import Button from './ui/Button'
 
 const navClass = ({ isActive }) =>
   isActive ? 'cat-nav-link active' : 'cat-nav-link'
@@ -15,7 +16,7 @@ export default function Header() {
       </nav>
       <div className="cat-auth">
         <Link to="/login" className="cat-3d">로그인</Link>
-        <Link to="/signup" className="btn btn-wood">회원가입</Link>
+        <Button variant="wood" to="/signup">회원가입</Button>
       </div>
     </header>
   )

@@ -4,16 +4,18 @@ import {
   useNavigate,
   Link,
 } from "react-router-dom";
-import { getBook, updateBook, deleteBook, generateCover } from "../api/books";
-import { buildPrompt } from "../api/imageGen";
-import { useGenres } from "../context/GenreContext";
-
-const fmtDate = (s) => (s ? s.slice(0, 10).replace(/-/g, ".") : "-");
+import { getBook, updateBook, deleteBook, generateCover } from "@/api/books";
+import { buildPrompt } from "@/api/imageGen";
+import { fmtDate } from "@/utils/bookUtils";
+import Button from "@/components/ui/Button";
+import StateMessage from "@/components/ui/StateMessage";
+import Page from "@/components/ui/Page";
+import BookCover from "@/components/book/BookCover";
+import GenreBadge from "@/components/book/GenreBadge";
 
 export default function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { themeFor, labelFor } = useGenres();
 
   const [book, setBook] = useState(null);
   const [error, setError] = useState(null);
@@ -107,56 +109,33 @@ export default function BookDetail() {
 
   if (error) {
     return (
-      <div className='cat-page'>
+      <Page>
         <Link to='/books' className='detail-back'>
           ← 목록으로
         </Link>
-        <div className='cat-state'>
-          책 정보를 불러오지 못했어요.
-          <br />
-          <code>npm run server</code> 실행 여부를 확인하세요.
-        </div>
-      </div>
+        <StateMessage status='server-error' />
+      </Page>
     );
   }
   if (!book) {
     return (
-      <div className='cat-page'>
-        <div className='cat-state'>불러오는 중…</div>
-      </div>
+      <Page>
+        <StateMessage status='loading' />
+      </Page>
     );
   }
 
-  const t = themeFor(book.genreCode);
-
   return (
-    <div className='cat-page'>
+    <Page>
       <Link to='/books' className='detail-back'>
         ← 목록으로
       </Link>
 
       <div className='detail-card'>
-        <div className='detail-cover'>
-          {book.coverImageUrl ? (
-            <img src={book.coverImageUrl} alt={book.title} />
-          ) : (
-            <div
-              className='card-cover-ph'
-              style={{
-                background: `linear-gradient(150deg, ${t.color}, ${t.color}99)`,
-              }}>
-              <span className='ph-title'>{book.title}</span>
-              <span className='ph-tag'>표지 준비 중</span>
-            </div>
-          )}
-        </div>
+        <BookCover book={book} variant='detail' />
 
         <div className='detail-body'>
-          <span
-            className='detail-genre'
-            style={{ color: t.color, background: `${t.color}18` }}>
-            {labelFor(book.genreCode)}
-          </span>
+          <GenreBadge code={book.genreCode} variant='detail' />
           <h2>{book.title}</h2>
           <p className='detail-author'>✍️ {book.author}</p>
           <p className='detail-dates'>
@@ -165,24 +144,22 @@ export default function BookDetail() {
           <div className='detail-content'>{book.content}</div>
 
           <div className='detail-actions'>
-            <button className='btn btn-ai' onClick={() => setAiOpen((v) => !v)}>
+            <Button variant='ai' onClick={() => setAiOpen((v) => !v)}>
               ✨ AI 표지 생성
-            </button>
-            <button
-              className={`btn btn-like ${book.isLiked ? "on" : ""}`}
+            </Button>
+            <Button
+              variant='like'
+              active={book.isLiked}
               onClick={toggleLike}
               disabled={busy}>
               {book.isLiked ? "❤️ 책장에 담김" : "🤍 책장 담기"}
-            </button>
-            <Link className='btn btn-ghost' to={`/books/${id}/edit`}>
+            </Button>
+            <Button variant='ghost' to={`/books/${id}/edit`}>
               ✏️ 수정
-            </Link>
-            <button
-              className='btn btn-danger'
-              onClick={handleDelete}
-              disabled={busy}>
+            </Button>
+            <Button variant='danger' onClick={handleDelete} disabled={busy}>
               🗑️ 삭제
-            </button>
+            </Button>
           </div>
 
           {aiOpen && (
@@ -210,12 +187,12 @@ export default function BookDetail() {
                   <option value='high'>high — 고품질</option>
                 </select>
               </div>
-              <button
-                className='btn btn-ai'
+              <Button
+                variant='ai'
                 onClick={handleGenerate}
                 disabled={generating}>
                 {generating ? "🎨 생성 중…" : "🎨 표지 생성하기"}
-              </button>
+              </Button>
               {generating && (
                 <p className='ai-spinner'>
                   이미지를 그리고 있어요. 최대 1분 정도 걸려요…
@@ -226,18 +203,15 @@ export default function BookDetail() {
                 <div className='ai-preview'>
                   <img src={preview} alt='생성된 표지 미리보기' />
                   <div className='ai-preview-actions'>
-                    <button
-                      className='btn btn-wood'
-                      onClick={saveCover}
-                      disabled={busy}>
+                    <Button variant='wood' onClick={saveCover} disabled={busy}>
                       💾 이 표지로 저장
-                    </button>
-                    <button
-                      className='btn btn-ghost'
+                    </Button>
+                    <Button
+                      variant='ghost'
                       onClick={handleGenerate}
                       disabled={generating}>
                       🔄 다시 생성
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -245,6 +219,6 @@ export default function BookDetail() {
           )}
         </div>
       </div>
-    </div>
+    </Page>
   );
 }

@@ -1,6 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { useGenres } from "../context/GenreContext";
+import { useGenres } from "@/context/GenreContext";
+import Button from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
 import GenreSelect from "./GenreSelect";
 
 export default function BookForm({
@@ -47,47 +48,35 @@ export default function BookForm({
 
   return (
     <form className='form-card' onSubmit={handleSubmit(onValidSubmit)}>
-      <div className='field'>
-        <label>제목 *</label>
-        <input
-          type='text'
-          placeholder='작품 제목'
-          maxLength={100}
-          {...register("title", {
-            required: "제목을 입력해주세요.",
-            minLength: {
-              value: 1,
-              message: "제목은 최소 1자 이상이어야 합니다.",
-            },
-            validate: (val) =>
-              val.trim().length > 0 || "공백만으로 제목을 설정할 수 없습니다.",
-          })}
-        />
-        {errors.title && <p className='form-error'>{errors.title.message}</p>}
-      </div>
+      <FormField
+        label='제목 *'
+        type='text'
+        placeholder='작품 제목'
+        maxLength={100}
+        error={errors.title?.message}
+        {...register("title", {
+          required: "제목을 입력해주세요.",
+          minLength: { value: 1, message: "제목은 최소 1자 이상이어야 합니다." },
+          validate: (val) =>
+            val.trim().length > 0 || "공백만으로 제목을 설정할 수 없습니다.",
+        })}
+      />
 
-      <div className='field'>
-        <label>작가명 *</label>
-        <input
-          type='text'
-          placeholder='필명 또는 이름'
-          maxLength={50}
-          {...register("author", {
-            required: "작가명을 입력해주세요.",
-            minLength: {
-              value: 1,
-              message: "작가명은 최소 1자 이상이어야 합니다.",
-            },
-            validate: (val) =>
-              val.trim().length > 0 ||
-              "공백만으로 작가명을 설정할 수 없습니다.",
-          })}
-        />
-        {errors.author && <p className='form-error'>{errors.author.message}</p>}
-      </div>
+      <FormField
+        label='작가명 *'
+        type='text'
+        placeholder='필명 또는 이름'
+        maxLength={50}
+        error={errors.author?.message}
+        {...register("author", {
+          required: "작가명을 입력해주세요.",
+          minLength: { value: 1, message: "작가명은 최소 1자 이상이어야 합니다." },
+          validate: (val) =>
+            val.trim().length > 0 || "공백만으로 작가명을 설정할 수 없습니다.",
+        })}
+      />
 
-      <div className='field'>
-        <label>장르 *</label>
+      <FormField label='장르 *' error={errors.genreCode?.message}>
         <Controller
           name='genreCode'
           control={control}
@@ -104,13 +93,9 @@ export default function BookForm({
             />
           )}
         />
-        {errors.genreCode && (
-          <p className='form-error'>{errors.genreCode.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <div className='field'>
-        <label>본문 내용 *</label>
+      <FormField label='본문 내용 *' error={errors.content?.message}>
         <textarea
           placeholder='줄거리나 핵심 키워드를 20자 이상 자세히 적어주세요. AI가 이 내용을 바탕으로 표지를 그려요.'
           maxLength={1000}
@@ -118,8 +103,7 @@ export default function BookForm({
             required: "본문 내용을 입력해주세요.",
             minLength: {
               value: 20,
-              message:
-                "AI가 표지를 그릴 수 있도록 최소 20자 이상 설명해주세요.",
+              message: "AI가 표지를 그릴 수 있도록 최소 20자 이상 설명해주세요.",
             },
             validate: (val) =>
               val.trim().length >= 20 ||
@@ -127,21 +111,18 @@ export default function BookForm({
           })}
         />
         <div className='char-count'>{contentValue.length} / 1000자</div>
-        {errors.content && (
-          <p className='form-error'>{errors.content.message}</p>
-        )}
-      </div>
+      </FormField>
 
       {error && <p className='form-error'>⚠ {error}</p>}
 
       <div className='form-actions'>
-        <Link className='btn btn-ghost' to={cancelTo}>
+        <Button variant='ghost' to={cancelTo}>
           취소
-        </Link>
+        </Button>
         {/* ✅ 버튼은 네트워크 통신 중(submitting)일 때만 막습니다. */}
-        <button className='btn btn-wood' type='submit' disabled={submitting}>
+        <Button variant='wood' type='submit' disabled={submitting}>
           {submitting ? "저장 중…" : submitLabel}
-        </button>
+        </Button>
       </div>
     </form>
   );

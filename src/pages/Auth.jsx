@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import Button from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -59,39 +61,32 @@ function LoginForm() {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
-      <div className="field">
-        <label>이메일</label>
-        <input
-          type="email"
-          placeholder="you@example.com"
-          autoComplete="email"
-          {...register("email", {
-            required: "이메일을 입력해주세요.",
-            pattern: { value: EMAIL_RE, message: "이메일 형식이 올바르지 않습니다." },
-          })}
-        />
-        {errors.email && <p className="form-error">{errors.email.message}</p>}
-      </div>
+      <FormField
+        label="이메일"
+        type="email"
+        placeholder="you@example.com"
+        autoComplete="email"
+        error={errors.email?.message}
+        {...register("email", {
+          required: "이메일을 입력해주세요.",
+          pattern: { value: EMAIL_RE, message: "이메일 형식이 올바르지 않습니다." },
+        })}
+      />
+      <FormField
+        label="비밀번호"
+        type="password"
+        placeholder="비밀번호"
+        autoComplete="current-password"
+        error={errors.password?.message}
+        {...register("password", {
+          required: "비밀번호를 입력해주세요.",
+          minLength: { value: 8, message: "비밀번호는 8자 이상이어야 합니다." },
+        })}
+      />
 
-      <div className="field">
-        <label>비밀번호</label>
-        <input
-          type="password"
-          placeholder="비밀번호"
-          autoComplete="current-password"
-          {...register("password", {
-            required: "비밀번호를 입력해주세요.",
-            minLength: { value: 8, message: "비밀번호는 8자 이상이어야 합니다." },
-          })}
-        />
-        {errors.password && (
-          <p className="form-error">{errors.password.message}</p>
-        )}
-      </div>
-
-      <button className="btn btn-wood auth-submit" type="submit" disabled={isSubmitting}>
+      <Button variant="wood" className="auth-submit" type="submit" disabled={isSubmitting}>
         {isSubmitting ? "로그인 중…" : "로그인"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -117,70 +112,55 @@ function SignupForm({ onDone }) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
-      <div className="field">
-        <label>이름</label>
-        <input
-          type="text"
-          placeholder="이름"
-          maxLength={30}
-          autoComplete="name"
-          {...register("name", {
-            required: "이름을 입력해주세요.",
-            validate: (v) => v.trim().length > 0 || "이름을 입력해주세요.",
-          })}
-        />
-        {errors.name && <p className="form-error">{errors.name.message}</p>}
-      </div>
+      <FormField
+        label="이름"
+        type="text"
+        placeholder="이름"
+        maxLength={30}
+        autoComplete="name"
+        error={errors.name?.message}
+        {...register("name", {
+          required: "이름을 입력해주세요.",
+          validate: (v) => v.trim().length > 0 || "이름을 입력해주세요.",
+        })}
+      />
+      <FormField
+        label="이메일"
+        type="email"
+        placeholder="you@example.com"
+        autoComplete="email"
+        error={errors.email?.message}
+        {...register("email", {
+          required: "이메일을 입력해주세요.",
+          pattern: { value: EMAIL_RE, message: "이메일 형식이 올바르지 않습니다." },
+        })}
+      />
+      <FormField
+        label="비밀번호"
+        type="password"
+        placeholder="8자 이상"
+        autoComplete="new-password"
+        error={errors.password?.message}
+        {...register("password", {
+          required: "비밀번호를 입력해주세요.",
+          minLength: { value: 8, message: "비밀번호는 8자 이상이어야 합니다." },
+        })}
+      />
+      <FormField
+        label="비밀번호 확인"
+        type="password"
+        placeholder="비밀번호 재입력"
+        autoComplete="new-password"
+        error={errors.passwordConfirm?.message}
+        {...register("passwordConfirm", {
+          required: "비밀번호를 한 번 더 입력해주세요.",
+          validate: (v) => v === passwordValue || "비밀번호가 일치하지 않습니다.",
+        })}
+      />
 
-      <div className="field">
-        <label>이메일</label>
-        <input
-          type="email"
-          placeholder="you@example.com"
-          autoComplete="email"
-          {...register("email", {
-            required: "이메일을 입력해주세요.",
-            pattern: { value: EMAIL_RE, message: "이메일 형식이 올바르지 않습니다." },
-          })}
-        />
-        {errors.email && <p className="form-error">{errors.email.message}</p>}
-      </div>
-
-      <div className="field">
-        <label>비밀번호</label>
-        <input
-          type="password"
-          placeholder="8자 이상"
-          autoComplete="new-password"
-          {...register("password", {
-            required: "비밀번호를 입력해주세요.",
-            minLength: { value: 8, message: "비밀번호는 8자 이상이어야 합니다." },
-          })}
-        />
-        {errors.password && (
-          <p className="form-error">{errors.password.message}</p>
-        )}
-      </div>
-
-      <div className="field">
-        <label>비밀번호 확인</label>
-        <input
-          type="password"
-          placeholder="비밀번호 재입력"
-          autoComplete="new-password"
-          {...register("passwordConfirm", {
-            required: "비밀번호를 한 번 더 입력해주세요.",
-            validate: (v) => v === passwordValue || "비밀번호가 일치하지 않습니다.",
-          })}
-        />
-        {errors.passwordConfirm && (
-          <p className="form-error">{errors.passwordConfirm.message}</p>
-        )}
-      </div>
-
-      <button className="btn btn-wood auth-submit" type="submit" disabled={isSubmitting}>
+      <Button variant="wood" className="auth-submit" type="submit" disabled={isSubmitting}>
         {isSubmitting ? "가입 중…" : "회원가입"}
-      </button>
+      </Button>
     </form>
   );
 }

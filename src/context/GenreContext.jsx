@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { getGenres } from '../api/genres'
-import { EMPTY_GENRE_INDEX, buildGenreIndex } from '../theme'
+import { getGenres } from '@/api/genres'
+import { EMPTY_GENRE_INDEX, buildGenreIndex } from '@/theme'
 
 const GenreContext = createContext(null)
 

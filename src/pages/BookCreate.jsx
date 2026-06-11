@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createBook } from '../api/books'
-import { useGenres } from '../context/GenreContext'
-import BookForm from '../components/BookForm'
+import { createBook } from '@/api/books'
+import { useGenres } from '@/context/GenreContext'
+import BookForm from '@/components/book/BookForm'
+import StateMessage from '@/components/ui/StateMessage'
+import Page, { PageHeader } from '@/components/ui/Page'
 
 export default function BookCreate() {
   const { ready } = useGenres()
@@ -31,18 +33,17 @@ export default function BookCreate() {
 
   if (!ready) {
     return (
-      <div className="cat-page">
-        <div className="cat-state">불러오는 중…</div>
-      </div>
+      <Page>
+        <StateMessage status="loading" />
+      </Page>
     )
   }
 
   return (
-    <div className="cat-page">
-      <div className="cat-page-head">
-        <h2>📝 새 도서 등록</h2>
-        <p>본문 내용은 AI 표지 생성의 바탕이 돼요</p>
-      </div>
+    <Page>
+      <PageHeader title="📝 새 도서 등록">
+        본문 내용은 AI 표지 생성의 바탕이 돼요
+      </PageHeader>
       <BookForm
         initial={{ title: '', author: '', genreCode: '', content: '' }}
         submitLabel="등록하기"
@@ -51,6 +52,6 @@ export default function BookCreate() {
         onSubmit={handleSubmit}
         cancelTo="/books"
       />
-    </div>
+    </Page>
   )
 }

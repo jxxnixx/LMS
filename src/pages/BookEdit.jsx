@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getBook, updateBook } from '../api/books'
-import { useGenres } from '../context/GenreContext'
-import BookForm from '../components/BookForm'
+import { getBook, updateBook } from '@/api/books'
+import { useGenres } from '@/context/GenreContext'
+import BookForm from '@/components/book/BookForm'
+import StateMessage from '@/components/ui/StateMessage'
+import Page, { PageHeader } from '@/components/ui/Page'
 
 export default function BookEdit() {
   const { id } = useParams()
@@ -34,25 +36,22 @@ export default function BookEdit() {
 
   if (loadError) {
     return (
-      <div className="cat-page">
-        <div className="cat-state">책 정보를 불러오지 못했어요.</div>
-      </div>
+      <Page>
+        <StateMessage status="server-error" />
+      </Page>
     )
   }
   if (!book || !ready) {
     return (
-      <div className="cat-page">
-        <div className="cat-state">불러오는 중…</div>
-      </div>
+      <Page>
+        <StateMessage status="loading" />
+      </Page>
     )
   }
 
   return (
-    <div className="cat-page">
-      <div className="cat-page-head">
-        <h2>📝 도서 수정</h2>
-        <p>{book.title}</p>
-      </div>
+    <Page>
+      <PageHeader title="📝 도서 수정">{book.title}</PageHeader>
       <BookForm
         initial={{
           title: book.title,
@@ -66,6 +65,6 @@ export default function BookEdit() {
         onSubmit={handleSubmit}
         cancelTo={`/books/${id}`}
       />
-    </div>
+    </Page>
   )
 }
