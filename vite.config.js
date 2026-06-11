@@ -1,22 +1,23 @@
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+export default defineConfig(() => {
   return {
     plugins: [react()],
+    resolve: {
+      alias: {
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
+      },
+    },
     server: {
       proxy: {
-        '/api/naver': {
-          target: 'https://openapi.naver.com',
+        "/api/naver": {
+          target: "localhost:8080",
           changeOrigin: true,
-          rewrite: path => path.replace(/^\/api\/naver/, ''),
-          headers: {
-            'X-Naver-Client-Id': env.VITE_NAVER_CLIENT_ID ?? '',
-            'X-Naver-Client-Secret': env.VITE_NAVER_CLIENT_SECRET ?? '',
-          },
+          rewrite: (path) => path.replace(/^\/api\/naver/, ""),
         },
       },
     },
-  }
-})
+  };
+});
