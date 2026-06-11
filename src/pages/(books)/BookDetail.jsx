@@ -14,18 +14,22 @@ import StateMessage from "@/components/ui/StateMessage";
 import Page from "@/components/ui/Page";
 import BookCover from "@/components/book/BookCover";
 import GenreBadge from "@/components/book/GenreBadge";
+import { useAuth } from "@/context/AuthContext";
 
 export default function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAuthed } = useAuth();
 
   const { data: book, isError: error } = useFetchBooksIdQuery({ path: { id } });
   const likeMutation = useModifyBooksIdLikeMutation();
   const deleteMutation = useRemoveBooksIdMutation();
   const updateMutation = useModifyBooksIdMutation();
   const busy =
-    likeMutation.isPending || deleteMutation.isPending || updateMutation.isPending;
+    likeMutation.isPending ||
+    deleteMutation.isPending ||
+    updateMutation.isPending;
 
   // AI 표지 생성
   const [aiOpen, setAiOpen] = useState(false);
@@ -131,29 +135,36 @@ export default function BookDetail() {
           </p>
           <div className='detail-content'>{book.content}</div>
 
-          <div className='detail-actions'>
-            <Button variant='ai' onClick={() => setAiOpen((v) => !v)}>
-              ✨ AI 표지 생성
-            </Button>
-            <Button
-              variant='like'
-              active={book.isLiked}
-              onClick={toggleLike}
-              disabled={busy}>
-              {book.isLiked ? "❤️ 책장에 담김" : "🤍 책장 담기"}
-            </Button>
-            <Button variant='ghost' to={`/books/${id}/edit`}>
-              ✏️ 수정
-            </Button>
-            <Button variant='danger' onClick={handleDelete} disabled={busy}>
-              🗑️ 삭제
-            </Button>
-          </div>
+          {isAuthed ? (
+            <div className='detail-actions'>
+              <Button variant='ai' onClick={() => setAiOpen((v) => !v)}>
+                ✨ AI 표지 생성
+              </Button>
+              <Button
+                variant='like'
+                active={book.isLiked}
+                onClick={toggleLike}
+                disabled={busy}>
+                {book.isLiked ? "❤️ 책장에 담김" : "🤍 책장 담기"}
+              </Button>
+              <Button variant='ghost' to={`/books/${id}/edit`}>
+                ✏️ 수정
+              </Button>
+              <Button variant='danger' onClick={handleDelete} disabled={busy}>
+                🗑️ 삭제
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )}
 
           {aiOpen && (
             <div className='ai-panel'>
               <h4>✨ AI 표지 생성</h4>
-              <p className='ai-notice'>⚠ 표지 생성 시 OpenAI API 비용이 발생합니다. 생성 전 확인해 주세요.</p>
+              <p className='ai-notice'>
+                ⚠ 표지 생성 시 OpenAI API 비용이 발생합니다. 생성 전 확인해
+                주세요.
+              </p>
               <div className='ai-row'>
                 <label>OpenAI API Key</label>
                 <input

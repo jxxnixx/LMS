@@ -26,12 +26,18 @@ export default function Header() {
         <NavLink to='/books' end className={navClass}>
           전체 도서
         </NavLink>
-        <NavLink to='/shelf' className={navClass}>
-          내 책장
-        </NavLink>
-        <NavLink to='/books/new' className={navClass}>
-          + 새 도서
-        </NavLink>
+        {isAuthed ? (
+          <>
+            <NavLink to='/shelf' className={navClass}>
+              내 책장
+            </NavLink>
+            <NavLink to='/books/new' className={navClass}>
+              + 새 도서
+            </NavLink>
+          </>
+        ) : (
+          <></>
+        )}
       </nav>
       <div className='cat-auth'>
         {isAuthed ? (

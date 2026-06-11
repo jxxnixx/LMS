@@ -39,7 +39,7 @@ export default function App() {
             <Route path='/books/:id' element={<BookDetail />} />
             <Route path='/books/:id/edit' element={<BookEdit />} />
             <Route path='/shelf' element={<Bookshelf />} />
-            <Route path='/login' element={<Auth />} />
+            <Route path='/login' element={<Auth mode='login' />} />
             <Route path='/signup' element={<Auth mode='signup' />} />
           </Route>
         </Routes>
