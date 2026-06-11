@@ -15,6 +15,9 @@ dist
 dist-ssr
 *.local
 
+# 비공개 codegen 생성기 (생성된 산출물 src/api/lms·src/types/lms 는 커밋함)
+scripts/codegen
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
