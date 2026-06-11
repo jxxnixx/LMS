@@ -1,0 +1,110 @@
+/* ════════════════════════════════════════
+   RECOMMEND — 내 책장 하단 '취향 기반 추천 도서'
+   (네이버 도서 + GPT 추천 결과 그리드)
+════════════════════════════════════════ */
+.rec-section {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--line, #e5e7eb);
+}
+
+.rec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.rec-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.rec-refresh-note {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted, #6b7280);
+}
+
+.rec-refresh-btn {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.rec-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 안내 문구 (빈 상태 · 분석 중) */
+.rec-msg {
+  padding: 2rem 0;
+  font-size: 0.875rem;
+  color: var(--muted, #6b7280);
+  text-align: center;
+}
+.rec-error {
+  padding: 1rem 0;
+  font-size: 0.875rem;
+  color: #ef4444;
+}
+
+/* 추천 결과 그리드 */
+.rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1.5rem;
+}
+
+.rec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.rec-cover {
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #f3f4f6;
+}
+.rec-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rec-cover-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.rec-item-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rec-item-author {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rec-source {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}

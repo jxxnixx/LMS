@@ -1,0 +1,270 @@
+/* ════════════════════════════════════════
+   SHELF VIEW
+════════════════════════════════════════ */
+.shelf-root {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.shelf-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 36px;
+  border-bottom: 1px solid #ececec;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.back-btn {
+  background: #ffffff;
+  border: 1px solid #d6d2c6;
+  color: #5a5345;
+  padding: 7px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.18s ease;
+}
+
+.back-btn:hover {
+  background: #4a3c20;
+  color: #fff;
+  border-color: #4a3c20;
+}
+
+.shelf-list-btn {
+  margin-left: auto;
+  background: #4a3c20;
+  border: 1px solid #4a3c20;
+  color: #fff;
+  padding: 7px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.18s ease;
+}
+
+.shelf-list-btn:hover {
+  background: #5f4d2a;
+  border-color: #5f4d2a;
+}
+
+.shelf-code {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--gc); /* 장르색 — ShelfView에서 주입 */
+}
+
+.shelf-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1c1c1c;
+  letter-spacing: 2px;
+}
+
+.shelf-name-sep {
+  color: #ccc;
+  margin: 0 4px;
+}
+
+.shelf-rack {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 0 60px;
+  background: radial-gradient(
+    ellipse 60% 50% at 30% 60%,
+    #faf8f3 0%,
+    #f1efe8 100%
+  );
+}
+
+.rack-inner {
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 60px 56px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #cfcabb transparent;
+}
+
+.rack-inner::-webkit-scrollbar {
+  height: 6px;
+}
+.rack-inner::-webkit-scrollbar-thumb {
+  background: #cfcabb;
+  border-radius: 3px;
+}
+
+.books-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  min-height: 240px;
+  width: max-content;
+}
+
+.rack-board {
+  height: 18px;
+  margin: 2px 40px 0;
+  background: linear-gradient(180deg, #a9784a, #835c34 60%, #5f4022);
+  border-radius: 2px;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.22),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* ── 책장 프레임 (복도 책장과 톤 통일) ── */
+.rack-pillar {
+  position: absolute;
+  top: 26px;
+  bottom: 62px;
+  width: 28px;
+  z-index: 3;
+  background: linear-gradient(180deg, #9a6c40 0%, #6f4a28 55%, #523619 100%);
+  box-shadow:
+    inset -3px 0 6px rgba(0, 0, 0, 0.35),
+    inset 3px 0 4px rgba(255, 255, 255, 0.12),
+    0 10px 22px rgba(0, 0, 0, 0.28);
+}
+
+.rack-pillar-l {
+  left: 18px;
+  border-radius: 3px 0 0 3px;
+}
+
+.rack-pillar-r {
+  right: 18px;
+  border-radius: 0 3px 3px 0;
+}
+
+.rack-top-beam {
+  position: absolute;
+  top: 26px;
+  left: 18px;
+  right: 18px;
+  height: 24px;
+  z-index: 3;
+  background: linear-gradient(180deg, #a8794a 0%, #7d5430 60%, #5a3c20 100%);
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.16);
+}
+
+.rack-msg {
+  padding: 80px 0;
+  text-align: center;
+  color: #999;
+  font-size: 15px;
+}
+
+.rack-msg code {
+  background: #f0eee8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #b5651d;
+}
+
+/* ── 책 한 권 ── */
+.bk-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.bk {
+  border-radius: 1px 3px 3px 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    2px 0 6px rgba(0, 0, 0, 0.22),
+    inset -3px 0 8px rgba(0, 0, 0, 0.22),
+    inset 2px 0 3px rgba(255, 255, 255, 0.14);
+  position: relative;
+}
+
+.bk::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 1px 0 0 1px;
+}
+
+.bk-title {
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 1.5px;
+  max-height: 86%;
+  overflow: hidden;
+  padding: 10px 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  user-select: none;
+}
+
+.bk-tip {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  background: #2b2620;
+  color: #f3ead8;
+  border-radius: 6px;
+  padding: 14px 16px;
+  z-index: 100;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.bk-tip h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.bk-tip-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 11px;
+  height: 11px;
+  background: #2b2620;
+}
+
+.bk-author {
+  font-size: 11px;
+  color: #a99b80;
+  margin-bottom: 8px;
+}
+.bk-content {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #cabfa6;
+}
+
+.bk-tip-cta {
+  display: block;
+  margin-top: 9px;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+  color: #d8b878;
+}
+

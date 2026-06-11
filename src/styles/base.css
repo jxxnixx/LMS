@@ -1,0 +1,18 @@
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.library-app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #ffffff;
+  font-family: "Pretendard", system-ui, "Apple SD Gothic Neo", sans-serif;
+  color: #2b2b2b;
+}
+

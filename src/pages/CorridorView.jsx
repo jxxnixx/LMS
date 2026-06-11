@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, useRef, Fragment } from "react";
-import { getBooks } from "../api/books";
-import { useGenres } from "../context/GenreContext";
-import { Panel } from "../components/Panel";
-import { SEG, CARPET_W, ROWS } from "../constants/corridor";
+import { getBooks } from "@/api/books";
+import { useGenres } from "@/context/GenreContext";
+import { Panel } from "@/components/Panel";
+import { SEG, CARPET_W, ROWS } from "@/constants/corridor";
 
 export default function CorridorView({ onOpenShelf, hidden = false }) {
   const { genres, ready } = useGenres();
@@ -88,12 +88,7 @@ export default function CorridorView({ onOpenShelf, hidden = false }) {
   }, []);
 
   return (
-    <div
-      className='corridor-root'
-      style={{
-        visibility: hidden ? 'hidden' : 'visible',
-        pointerEvents: hidden ? 'none' : 'auto',
-      }}>
+    <div className={`corridor-root${hidden ? ' is-hidden' : ''}`}>
       <div className='scene'>
         {/* CSS transition으로 GPU 애니메이션 — Framer Motion JS 루프 대신 */}
         <div

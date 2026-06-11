@@ -1,26 +1,16 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { getBooks } from "../api/books";
-import { useGenres } from "../context/GenreContext";
+import { getBooks } from "@/api/books";
+import { useGenres } from "@/context/GenreContext";
+import StateMessage from "@/components/ui/StateMessage";
+import BookCover from "@/components/book/BookCover";
 
 function MiniBook({ book, color }) {
   const navigate = useNavigate();
   return (
     <button className='mini-book' onClick={() => navigate(`/books/${book.id}`)}>
-      <div className='mini-cover'>
-        {book.coverImageUrl ? (
-          <img src={book.coverImageUrl} alt={book.title} />
-        ) : (
-          <div
-            className='mini-ph'
-            style={{
-              background: `linear-gradient(150deg, ${color}, ${color}aa)`,
-            }}>
-            <span>{book.title}</span>
-          </div>
-        )}
-      </div>
+      <BookCover book={book} variant='mini' color={color} />
       <span className='mini-title'>{book.title}</span>
       <span className='mini-author'>{book.author}</span>
     </button>
@@ -57,7 +47,7 @@ export default function ShelfView({ genre, onBack }) {
         <button className='back-btn' onClick={onBack}>
           ← 복도로 돌아가기
         </button>
-        <span className='shelf-code' style={{ color: t.color }}>
+        <span className='shelf-code' style={{ "--gc": t.color }}>
           {topCode}
         </span>
         <h2 className='shelf-name'>{top ? top.label : t.label}</h2>
@@ -67,12 +57,8 @@ export default function ShelfView({ genre, onBack }) {
       </header>
 
       <div className='shelf-body'>
-        {error && (
-          <p className='cat-state'>
-            json-server에 연결할 수 없어요. <code>npm run server</code>
-          </p>
-        )}
-        {!books && !error && <p className='cat-state'>불러오는 중…</p>}
+        {error && <StateMessage status='server-error' />}
+        {!books && !error && <StateMessage status='loading' />}
         {books && (
           <div className='bookcase-unit'>
             {subs.map((sub) => {

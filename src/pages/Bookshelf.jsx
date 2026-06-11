@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { getBooks } from '../api/books'
-import BookCard from '../components/BookCard'
-import { useGenres } from '../context/GenreContext'
-import { fetchRecommendations } from '../api/recommend'
+import { getBooks } from '@/api/books'
+import BookCard from '@/components/book/BookCard'
+import { useGenres } from '@/context/GenreContext'
+import { fetchRecommendations } from '@/api/recommend'
 
 const REC_CACHE_KEY = 'lms_recommendations'
 const REC_TTL = 12 * 60 * 60 * 1000
@@ -112,21 +112,19 @@ export default function Bookshelf() {
       )}
 
       {/* 취향 기반 추천 */}
-      <section style={{ marginTop: '4rem', borderTop: '1px solid var(--border, #e5e7eb)', paddingTop: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+      <section className="rec-section">
+        <div className="rec-head">
           <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>취향 기반 추천 도서</h3>
+            <h3 className="rec-title">취향 기반 추천 도서</h3>
             {cacheTs && (
-              <p style={{ fontSize: '0.75rem', color: 'var(--muted, #6b7280)', marginTop: '0.25rem' }}>
-                {formatNextRefresh(cacheTs)}
-              </p>
+              <p className="rec-refresh-note">{formatNextRefresh(cacheTs)}</p>
             )}
           </div>
           {books && books.length > 0 && (
             <button
+              className="rec-refresh-btn"
               onClick={handleForceRefresh}
               disabled={recLoading}
-              style={{ fontSize: '0.8rem', padding: '0.3rem 0.7rem', cursor: recLoading ? 'not-allowed' : 'pointer', opacity: recLoading ? 0.6 : 1 }}
             >
               {recLoading ? '분석 중…' : '🔄 새로 받기'}
             </button>
@@ -134,41 +132,39 @@ export default function Bookshelf() {
         </div>
 
         {books && books.length === 0 && (
-          <p style={{ fontSize: '0.875rem', color: 'var(--muted, #6b7280)', textAlign: 'center', padding: '2rem 0' }}>
+          <p className="rec-msg">
             책장에 책을 추가하면 취향에 맞는 책을 추천해드립니다.
           </p>
         )}
         {recLoading && (
-          <p style={{ fontSize: '0.875rem', color: 'var(--muted, #6b7280)', textAlign: 'center', padding: '2rem 0' }}>
-            GPT가 추천 도서를 분석 중입니다…
-          </p>
+          <p className="rec-msg">GPT가 추천 도서를 분석 중입니다…</p>
         )}
-        {recError && (
-          <p style={{ fontSize: '0.875rem', color: '#ef4444', padding: '1rem 0' }}>{recError}</p>
-        )}
+        {recError && <p className="rec-error">{recError}</p>}
         {!recLoading && recommendations.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1.5rem' }}>
+          <div className="rec-grid">
             {recommendations.map((item, i) => (
               <a
                 key={i}
+                className="rec-item"
                 href={item.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
               >
-                <div style={{ aspectRatio: '2/3', overflow: 'hidden', borderRadius: '0.5rem', background: '#f3f4f6' }}>
+                <div className="rec-cover">
                   {item.image
-                    ? <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#9ca3af' }}>이미지 없음</div>
+                    ? <img src={item.image} alt={item.title} />
+                    : <div className="rec-cover-empty">이미지 없음</div>
                   }
                 </div>
-                <p style={{ fontSize: '0.8rem', fontWeight: 500, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                <p
+                  className="rec-item-title"
                   dangerouslySetInnerHTML={{ __html: item.title }}
                 />
-                <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                <p
+                  className="rec-item-author"
                   dangerouslySetInnerHTML={{ __html: item.author }}
                 />
-                <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>📚 네이버 도서</span>
+                <span className="rec-source">📚 네이버 도서</span>
               </a>
             ))}
           </div>

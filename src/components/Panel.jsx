@@ -1,5 +1,5 @@
 import { Fragment, memo } from "react";
-import { useGenres } from "../context/GenreContext";
+import { useGenres } from "@/context/GenreContext";
 import Bookcase from "./Bookcase";
 import {
   SEG,
@@ -9,7 +9,7 @@ import {
   SIGN_H,
   SIGN_ABOVE,
   SIGN_Z_BIAS,
-} from "../constants/corridor";
+} from "@/constants/corridor";
 
 export const Panel = memo(function Panel({
   bookcase,
@@ -63,7 +63,7 @@ export const Panel = memo(function Panel({
           "--sign-y": `${yOffset}px`,
           "--sign-z": `${zOffset}px`,
         }}>
-        <span className='sign-label' style={{ color: t.color }}>
+        <span className='sign-label' style={{ "--gc": t.color }}>
           {signLabel}
         </span>
         <span className='sign-code'>{bookcase.top.code}</span>
