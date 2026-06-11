@@ -1,3 +1,5 @@
+import { createAiImage } from "@/api/lms/ai/aiAPI";
+
 // ── 장르별 시각 장면 ──────────────────────────────────────────────
 const GENRE_VISUAL = {
   'NV-01': (t, c) => `romantic scene: ${c.slice(0,60)}. Specific visual: two figures across a rain-fogged café window, hands almost touching, scattered rose petals on wooden table, warm golden bokeh`,
@@ -121,32 +123,17 @@ Layout top-to-bottom:
 • Sharp clean line between illustration and bottom panel`;
 }
 
-// ── OpenAI 표지 이미지 생성 (브라우저에서 사용자 API Key로 직접 호출) ──
+// ── OpenAI 표지 이미지 생성 — 백엔드 /ai/image 프록시 경유 (키는 서버에만, CORS 없음) ──
 // 생성된 이미지를 Data URL로 반환 → 표지 저장 mutation으로 coverImageUrl에 넣는다.
-export async function generateCover({ apiKey, prompt, quality = "medium" }) {
-  let res;
-  try {
-    res = await fetch("https://api.openai.com/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-image-1",
-        prompt,
-        n: 1,
-        size: "1024x1536",
-        quality,
-      }),
-    });
-  } catch {
-    throw new Error("OpenAI 서버에 연결할 수 없어요.");
-  }
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data?.error?.message || `이미지 생성 실패 (${res.status})`);
-  }
+export async function generateCover({ prompt, quality = "medium" }) {
+  // 생성된 createAiImage → 백엔드 /ai/image 프록시 경유
+  const data = await createAiImage({
+    model: "gpt-image-1",
+    prompt,
+    n: 1,
+    size: "1024x1536",
+    quality,
+  });
   const b64 = data?.data?.[0]?.b64_json;
   if (!b64) throw new Error("이미지 데이터를 받지 못했어요.");
   return `data:image/png;base64,${b64}`;

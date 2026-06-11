@@ -5,7 +5,7 @@
  *
  * 🔧 생성 명령어: npm run api:extract-tags
  *
- * 📊 총 4개 태그 발견
+ * 📊 총 5개 태그 발견
  */
 
 // === 🏷️ LMS 서버 태그 리스트 ===
@@ -14,6 +14,7 @@
  * LMS 서버의 모든 Swagger 태그들
  */
 export const LMS_TAGS = [
+  'ai',
   'api',
   'auth',
   'books',
@@ -24,6 +25,7 @@ export const LMS_TAGS = [
  * LMS 서버 태그별 API 수량 통계
  */
 export const LMS_TAG_STATS = {
+  'ai': 2,
   'api': 1,
   'auth': 4,
   'books': 3,
@@ -35,7 +37,7 @@ export const LMS_TAG_STATS = {
  */
 export const LMS_TAG_SUMMARY = {
   server: 'lms',
-  total: 4,
+  total: 5,
   tags: LMS_TAGS,
   stats: LMS_TAG_STATS
 } as const;

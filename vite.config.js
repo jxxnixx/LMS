@@ -10,14 +10,7 @@ export default defineConfig(() => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-    server: {
-      proxy: {
-        "/api/naver": {
-          target: "localhost:8080",
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/naver/, ""),
-        },
-      },
-    },
+    // 네이버 검색은 이제 lmsFetcher가 백엔드 /api/naver(프록시)를 직접 호출하므로
+    // 옛 dev 프록시는 제거. (백엔드 CORS 정책 적용)
   };
 });

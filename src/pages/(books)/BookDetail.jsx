@@ -31,11 +31,8 @@ export default function BookDetail() {
     deleteMutation.isPending ||
     updateMutation.isPending;
 
-  // AI 표지 생성
+  // AI 표지 생성 (키는 백엔드에 있으므로 프론트에서 입력받지 않음)
   const [aiOpen, setAiOpen] = useState(false);
-  const [apiKey, setApiKey] = useState(
-    () => localStorage.getItem("openai_key") || "",
-  );
   const [quality, setQuality] = useState("medium");
   const [generating, setGenerating] = useState(false);
   const [preview, setPreview] = useState("");
@@ -63,17 +60,11 @@ export default function BookDetail() {
   }
 
   async function handleGenerate() {
-    if (!apiKey.trim()) {
-      setAiError("OpenAI API Key를 입력해 주세요.");
-      return;
-    }
-    localStorage.setItem("openai_key", apiKey.trim());
     setGenerating(true);
     setAiError(null);
     setPreview("");
     try {
       const dataUrl = await generateCover({
-        apiKey: apiKey.trim(),
         prompt: buildPrompt(book),
         quality,
       });
@@ -165,16 +156,6 @@ export default function BookDetail() {
                 ⚠ 표지 생성 시 OpenAI API 비용이 발생합니다. 생성 전 확인해
                 주세요.
               </p>
-              <div className='ai-row'>
-                <label>OpenAI API Key</label>
-                <input
-                  className='ai-input'
-                  type='password'
-                  placeholder='sk-…'
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                />
-              </div>
               <div className='ai-row'>
                 <label>이미지 품질</label>
                 <select

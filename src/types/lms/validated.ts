@@ -31,6 +31,16 @@ export type login_Response = components['schemas']['AuthResponse'];
 export type checkCode_Body = components['schemas']['CheckCodeRequest'];
 export type checkCode_Response = any;
 
+//// image
+// image
+export type image_Body = components['schemas']['ImageRequest'];
+export type image_Response = any;
+
+//// chat
+// chat
+export type chat_Body = components['schemas']['ChatRequest'];
+export type chat_Response = any;
+
 //// getBook
 // getBook
 export type getBook_Params = {
