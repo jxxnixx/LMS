@@ -120,3 +120,34 @@ Layout top-to-bottom:
 • The cover must feel PREMIUM and VISUALLY COMPELLING from a distance
 • Sharp clean line between illustration and bottom panel`;
 }
+
+// ── OpenAI 표지 이미지 생성 (브라우저에서 사용자 API Key로 직접 호출) ──
+// 생성된 이미지를 Data URL로 반환 → 표지 저장 mutation으로 coverImageUrl에 넣는다.
+export async function generateCover({ apiKey, prompt, quality = "medium" }) {
+  let res;
+  try {
+    res = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-image-1",
+        prompt,
+        n: 1,
+        size: "1024x1536",
+        quality,
+      }),
+    });
+  } catch {
+    throw new Error("OpenAI 서버에 연결할 수 없어요.");
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data?.error?.message || `이미지 생성 실패 (${res.status})`);
+  }
+  const b64 = data?.data?.[0]?.b64_json;
+  if (!b64) throw new Error("이미지 데이터를 받지 못했어요.");
+  return `data:image/png;base64,${b64}`;
+}
