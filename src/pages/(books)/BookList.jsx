@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getBooks } from '@/api/books'
+import { useFetchBooksQuery } from '@/api/lms/books/useBooksQueries'
 import BookCard from '@/components/book/BookCard'
 import GenreSelect from '@/components/book/GenreSelect'
 import StateMessage from '@/components/ui/StateMessage'
@@ -8,46 +8,42 @@ import Pagination from '@/components/ui/Pagination'
 
 const ITEMS_PER_PAGE = 10
 
+const SORT_OPTIONS = [
+  { value: 'title-asc',   label: '제목 가나다순',  _sort: 'title',     _order: 'asc'  },
+  { value: 'title-desc',  label: '제목 역순',      _sort: 'title',     _order: 'desc' },
+  { value: 'author-asc',  label: '저자 가나다순',  _sort: 'author',    _order: 'asc'  },
+  { value: 'newest',      label: '최신 등록순',    _sort: 'createdAt', _order: 'desc' },
+  { value: 'oldest',      label: '오래된 순',      _sort: 'createdAt', _order: 'asc'  },
+]
+
 export default function BookList() {
-  const [books, setBooks] = useState(null)
-  const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [topCode, setTopCode] = useState('')
   const [subCode, setSubCode] = useState('')
   const [likedOnly, setLikedOnly] = useState(false)
   const [sort, setSort] = useState('title-asc')
   const [page, setPage] = useState(1)
 
-  const SORT_OPTIONS = [
-    { value: 'title-asc',   label: '제목 가나다순',  _sort: 'title',     _order: 'asc'  },
-    { value: 'title-desc',  label: '제목 역순',      _sort: 'title',     _order: 'desc' },
-    { value: 'author-asc',  label: '저자 가나다순',  _sort: 'author',    _order: 'asc'  },
-    { value: 'newest',      label: '최신 등록순',    _sort: 'createdAt', _order: 'desc' },
-    { value: 'oldest',      label: '오래된 순',      _sort: 'createdAt', _order: 'asc'  },
-  ]
-
+  // 검색어 디바운스 (입력 멈추고 250ms 뒤 반영)
   useEffect(() => {
-    const parts = []
-    if (search.trim()) parts.push(`title_like=${encodeURIComponent(search.trim())}`)
-    if (subCode) parts.push(`genreCode=${subCode}`)
-    else if (topCode) parts.push(`genreCode_like=${topCode}`)
-    if (likedOnly) parts.push('isLiked=true')
-    const { _sort, _order } = SORT_OPTIONS.find(o => o.value === sort)
-    parts.push(`_sort=${_sort}`, `_order=${_order}`)
-    const query = parts.join('&')
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 250)
+    return () => clearTimeout(t)
+  }, [search])
 
-    const timer = setTimeout(() => {
-      setError(null)
-      setPage(1)
-      getBooks(query)
-        .then(setBooks)
-        .catch((e) => {
-          setError(e.message)
-          setBooks(null)
-        })
-    }, 250)
-    return () => clearTimeout(timer)
-  }, [search, topCode, subCode, likedOnly, sort])
+  // 필터가 바뀌면 첫 페이지로
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearch, topCode, subCode, likedOnly, sort])
+
+  const sortOpt = SORT_OPTIONS.find((o) => o.value === sort)
+  const query = { _sort: sortOpt._sort, _order: sortOpt._order }
+  if (debouncedSearch) query.title_like = debouncedSearch
+  if (subCode) query.genreCode = subCode
+  else if (topCode) query.genreCode_like = topCode
+  if (likedOnly) query.isLiked = true
+
+  const { data: books, isError: error } = useFetchBooksQuery({ query })
 
   const totalPages = books ? Math.max(1, Math.ceil(books.length / ITEMS_PER_PAGE)) : 1
   const paginated = books ? books.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE) : []

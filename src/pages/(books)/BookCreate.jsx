@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createBook } from '@/api/books'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCreateBooksMutation } from '@/api/lms/books/useBooksMutations'
 import { useGenres } from '@/context/GenreContext'
 import BookForm from '@/components/book/BookForm'
 import StateMessage from '@/components/ui/StateMessage'
@@ -9,25 +9,16 @@ import Page, { PageHeader } from '@/components/ui/Page'
 export default function BookCreate() {
   const { ready } = useGenres()
   const navigate = useNavigate()
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState(null)
+  const queryClient = useQueryClient()
+  const createMutation = useCreateBooksMutation()
 
   async function handleSubmit(data) {
-    setSubmitting(true)
-    setError(null)
-    const now = new Date().toISOString()
     try {
-      const created = await createBook({
-        ...data,
-        coverImageUrl: '',
-        isLiked: false,
-        createdAt: now,
-        updatedAt: now,
-      })
+      const created = await createMutation.mutateAsync({ ...data, coverImageUrl: '' })
+      queryClient.invalidateQueries({ queryKey: ['fetchBooks'] })
       navigate(`/books/${created.id}`)
-    } catch (e) {
-      setError(e.message)
-      setSubmitting(false)
+    } catch {
+      // 실패 메시지는 createMutation.error로 표시
     }
   }
 
@@ -47,8 +38,8 @@ export default function BookCreate() {
       <BookForm
         initial={{ title: '', author: '', genreCode: '', content: '' }}
         submitLabel="등록하기"
-        submitting={submitting}
-        error={error}
+        submitting={createMutation.isPending}
+        error={createMutation.error?.message}
         onSubmit={handleSubmit}
         cancelTo="/books"
       />

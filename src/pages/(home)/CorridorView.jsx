@@ -1,20 +1,13 @@
 import { useState, useEffect, useCallback, useMemo, useRef, Fragment } from "react";
-import { getBooks } from "@/api/books";
+import { useFetchBooksQuery } from "@/api/lms/books/useBooksQueries";
 import { useGenres } from "@/context/GenreContext";
 import { Panel } from "@/components/Panel";
 import { SEG, CARPET_W, ROWS } from "@/constants/corridor";
 
 export default function CorridorView({ onOpenShelf, hidden = false }) {
   const { genres, ready } = useGenres();
-  const [books, setBooks] = useState(null);
-  const [error, setError] = useState(null);
+  const { data: books, isError } = useFetchBooksQuery({ query: {} });
   const [step, setStep] = useState(0);
-
-  useEffect(() => {
-    getBooks()
-      .then(setBooks)
-      .catch((e) => setError(e.message));
-  }, []);
 
   const booksByGenre = useMemo(() => {
     const m = {};
@@ -127,14 +120,14 @@ export default function CorridorView({ onOpenShelf, hidden = false }) {
 
         </div>
 
-        {error && (
+        {isError && (
           <div className='scene-msg'>
-            json-server가 실행되어 있지 않아요.
+            백엔드 서버에 연결할 수 없어요.
             <br />
-            <code>npm run server</code> 실행 후 새로고침하세요.
+            서버 실행 여부를 확인하세요.
           </div>
         )}
-        {!ready && !error && <div className='scene-msg'>불러오는 중…</div>}
+        {!ready && !isError && <div className='scene-msg'>불러오는 중…</div>}
       </div>
 
       <div className='corridor-nav'>

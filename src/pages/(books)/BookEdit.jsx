@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getBook, updateBook } from '@/api/books'
+import { useQueryClient } from '@tanstack/react-query'
+import { useFetchBooksIdQuery } from '@/api/lms/books/useBooksQueries'
+import { useModifyBooksIdMutation } from '@/api/lms/books/useBooksMutations'
 import { useGenres } from '@/context/GenreContext'
 import BookForm from '@/components/book/BookForm'
 import StateMessage from '@/components/ui/StateMessage'
@@ -10,27 +11,19 @@ export default function BookEdit() {
   const { id } = useParams()
   const { ready } = useGenres()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
-  const [book, setBook] = useState(null)
-  const [loadError, setLoadError] = useState(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    getBook(id)
-      .then(setBook)
-      .catch((e) => setLoadError(e.message))
-  }, [id])
+  const { data: book, isError: loadError } = useFetchBooksIdQuery({ path: { id } })
+  const updateMutation = useModifyBooksIdMutation()
 
   async function handleSubmit(data) {
-    setSubmitting(true)
-    setError(null)
     try {
-      await updateBook(id, { ...data, updatedAt: new Date().toISOString() })
+      await updateMutation.mutateAsync({ params: { path: { id } }, body: data })
+      queryClient.invalidateQueries({ queryKey: ['fetchBooksId'] })
+      queryClient.invalidateQueries({ queryKey: ['fetchBooks'] })
       navigate(`/books/${id}`)
-    } catch (e) {
-      setError(e.message)
-      setSubmitting(false)
+    } catch {
+      // 실패 메시지는 updateMutation.error로 표시
     }
   }
 
@@ -60,8 +53,8 @@ export default function BookEdit() {
           content: book.content,
         }}
         submitLabel="저장하기"
-        submitting={submitting}
-        error={error}
+        submitting={updateMutation.isPending}
+        error={updateMutation.error?.message}
         onSubmit={handleSubmit}
         cancelTo={`/books/${id}`}
       />

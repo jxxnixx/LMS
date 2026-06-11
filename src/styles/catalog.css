@@ -90,6 +90,11 @@
   border-color: var(--wood);
   color: var(--wood);
 }
+.cat-user {
+  font-size: 13px;
+  color: var(--ink-soft);
+  align-self: center;
+}
 
 /* ── 페이지 컨테이너 ── */
 .cat-page {

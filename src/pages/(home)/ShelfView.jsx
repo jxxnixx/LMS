@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { getBooks } from "@/api/books";
+import { useFetchBooksQuery } from "@/api/lms/books/useBooksQueries";
 import { useGenres } from "@/context/GenreContext";
 import StateMessage from "@/components/ui/StateMessage";
 import BookCover from "@/components/book/BookCover";
@@ -21,20 +20,15 @@ function MiniBook({ book, color }) {
 export default function ShelfView({ genre, onBack }) {
   const { get, subsOf, themeFor } = useGenres();
   const navigate = useNavigate();
-  const [books, setBooks] = useState(null);
-  const [error, setError] = useState(null);
 
   const topCode = genre.parentCode || genre.code.split("-")[0];
   const top = get(topCode);
   const subs = subsOf(topCode);
   const t = themeFor(topCode);
 
-  useEffect(() => {
-    setError(null);
-    getBooks(`genreCode_like=${topCode}&_sort=id`)
-      .then(setBooks)
-      .catch((e) => setError(e.message));
-  }, [topCode]);
+  const { data: books, isError: error } = useFetchBooksQuery({
+    query: { genreCode_like: topCode, _sort: "id", _order: "asc" },
+  });
 
   return (
     <motion.div

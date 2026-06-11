@@ -41,6 +41,7 @@
   border-radius: 22px;
   margin-bottom: 24px;
 }
+
 .auth-tab {
   flex: 1;
   padding: 9px 0;
@@ -53,6 +54,7 @@
   cursor: pointer;
   transition: all 0.15s;
 }
+
 .auth-tab.on {
   background: var(--wood, #4a3c20);
   color: #fff;
@@ -64,6 +66,35 @@
   justify-content: center;
   margin-top: 6px;
   padding: 12px 18px;
+}
+
+/* 이메일/코드 + 우측 버튼 한 줄 */
+.auth-verify-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.auth-verify-row input {
+  flex: 1;
+  min-width: 0;
+}
+.auth-verify-btn {
+  flex-shrink: 0;
+  padding: 0 14px;
+  font-size: 12.5px;
+}
+
+/* 인증 진행 안내 (성공 톤) */
+.auth-hint-ok {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--wood, #4a3c20);
+}
+/* 가입 가능 조건 안내 */
+.auth-hint {
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  color: var(--ink-soft, #6b6457);
 }
 
 /* ── 헤더 인증 버튼 ── */

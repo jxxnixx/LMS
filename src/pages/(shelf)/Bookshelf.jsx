@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { getBooks } from '@/api/books'
+import { useFetchBooksQuery } from '@/api/lms/books/useBooksQueries'
 import BookCard from '@/components/book/BookCard'
 import { useGenres } from '@/context/GenreContext'
 import { fetchRecommendations } from '@/api/recommend'
@@ -29,20 +29,15 @@ function formatNextRefresh(ts) {
 
 export default function Bookshelf() {
   const { genres, ready } = useGenres()
-  const [books, setBooks] = useState(null)
-  const [error, setError] = useState(null)
+  const { data: books, isError: error } = useFetchBooksQuery({
+    query: { isLiked: true, _sort: 'updatedAt', _order: 'desc' },
+  })
 
   const [recommendations, setRecommendations] = useState([])
   const [recLoading, setRecLoading] = useState(false)
   const [recError, setRecError] = useState('')
   const [cacheTs, setCacheTs] = useState(null)
   const recFetched = useRef(false)
-
-  useEffect(() => {
-    getBooks('isLiked=true&_sort=updatedAt&_order=desc')
-      .then(setBooks)
-      .catch((e) => setError(e.message))
-  }, [])
 
   useEffect(() => {
     if (recFetched.current) return

@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { buildPrompt, generateCover } from "@/api/imageGen";
+import { useFetchBooksIdQuery } from "@/api/lms/books/useBooksQueries";
 import {
-  useParams,
-  useNavigate,
-  Link,
-} from "react-router-dom";
-import { getBook, updateBook, deleteBook, generateCover } from "@/api/books";
-import { buildPrompt } from "@/api/imageGen";
+  useModifyBooksIdLikeMutation,
+  useRemoveBooksIdMutation,
+  useModifyBooksIdMutation,
+} from "@/api/lms/books/useBooksMutations";
 import { fmtDate } from "@/utils/bookUtils";
 import Button from "@/components/ui/Button";
 import StateMessage from "@/components/ui/StateMessage";
@@ -16,10 +18,14 @@ import GenreBadge from "@/components/book/GenreBadge";
 export default function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const [book, setBook] = useState(null);
-  const [error, setError] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const { data: book, isError: error } = useFetchBooksIdQuery({ path: { id } });
+  const likeMutation = useModifyBooksIdLikeMutation();
+  const deleteMutation = useRemoveBooksIdMutation();
+  const updateMutation = useModifyBooksIdMutation();
+  const busy =
+    likeMutation.isPending || deleteMutation.isPending || updateMutation.isPending;
 
   // AI 표지 생성
   const [aiOpen, setAiOpen] = useState(false);
@@ -31,39 +37,24 @@ export default function BookDetail() {
   const [preview, setPreview] = useState("");
   const [aiError, setAiError] = useState(null);
 
-  useEffect(() => {
-    getBook(id)
-      .then((b) => {
-        setBook(b);
-        setError(null);
-      })
-      .catch((e) => setError(e.message));
-  }, [id]);
-
   async function toggleLike() {
-    setBusy(true);
     try {
-      const updated = await updateBook(id, {
-        isLiked: !book.isLiked,
-        updatedAt: new Date().toISOString(),
-      });
-      setBook(updated);
+      await likeMutation.mutateAsync({ path: { id } });
+      queryClient.invalidateQueries({ queryKey: ["fetchBooksId"] });
+      queryClient.invalidateQueries({ queryKey: ["fetchBooks"] });
     } catch (e) {
       alert(e.message);
-    } finally {
-      setBusy(false);
     }
   }
 
   async function handleDelete() {
     if (!window.confirm(`'${book.title}'을(를) 삭제할까요?`)) return;
-    setBusy(true);
     try {
-      await deleteBook(id);
+      await deleteMutation.mutateAsync({ path: { id } });
+      queryClient.invalidateQueries({ queryKey: ["fetchBooks"] });
       navigate("/books");
     } catch (e) {
       alert(e.message);
-      setBusy(false);
     }
   }
 
@@ -91,19 +82,16 @@ export default function BookDetail() {
   }
 
   async function saveCover() {
-    setBusy(true);
     try {
-      const updated = await updateBook(id, {
-        coverImageUrl: preview,
-        updatedAt: new Date().toISOString(),
+      await updateMutation.mutateAsync({
+        params: { path: { id } },
+        body: { coverImageUrl: preview },
       });
-      setBook(updated);
+      queryClient.invalidateQueries({ queryKey: ["fetchBooksId"] });
       setPreview("");
       setAiOpen(false);
     } catch (e) {
       alert(e.message);
-    } finally {
-      setBusy(false);
     }
   }
 
