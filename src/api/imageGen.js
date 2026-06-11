@@ -1,6 +1,3 @@
-const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
-const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-
 // ── 장르별 시각 장면 ──────────────────────────────────────────────
 const GENRE_VISUAL = {
   'NV-01': (t, c) => `romantic scene: ${c.slice(0,60)}. Specific visual: two figures across a rain-fogged café window, hands almost touching, scattered rose petals on wooden table, warm golden bokeh`,
@@ -122,31 +119,4 @@ Layout top-to-bottom:
 • Typography: elegant, readable Korean fonts — gold/cream on dark illustration, dark on light panel
 • The cover must feel PREMIUM and VISUALLY COMPELLING from a distance
 • Sharp clean line between illustration and bottom panel`;
-}
-
-export async function generateCoverImage(book, quality = 'medium') {
-  const prompt = buildPrompt(book);
-
-  const res = await fetch(OPENAI_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-image-1',
-      prompt,
-      n: 1,
-      size: '1024x1536',
-      quality,
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message ?? '이미지 생성 실패');
-  }
-
-  const data = await res.json();
-  return `data:image/png;base64,${data.data[0].b64_json}`;
 }

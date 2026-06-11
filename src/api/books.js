@@ -7,10 +7,6 @@ export const getBooks = (query = '') =>
 // 상세 조회
 export const getBook = (id) => request(`/books/${id}`)
 
-// 특정 장르의 책 (3D 책장 뷰에서 사용)
-export const getBooksByGenre = (genreCode) =>
-  request(`/books?genreCode=${encodeURIComponent(genreCode)}`)
-
 // 등록
 export const createBook = (data) =>
   request('/books', { method: 'POST', ...jsonBody(data) })
