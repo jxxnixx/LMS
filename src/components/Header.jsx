@@ -13,6 +13,10 @@ export default function Header() {
         <NavLink to="/shelf" className={navClass}>내 책장</NavLink>
         <NavLink to="/books/new" className={navClass}>+ 새 도서</NavLink>
       </nav>
+      <div className="cat-auth">
+        <Link to="/login" className="cat-3d">로그인</Link>
+        <Link to="/signup" className="btn btn-wood">회원가입</Link>
+      </div>
     </header>
   )
 }

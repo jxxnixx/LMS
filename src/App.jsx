@@ -6,9 +6,11 @@ import BookDetail from "./pages/BookDetail";
 import BookCreate from "./pages/BookCreate";
 import BookEdit from "./pages/BookEdit";
 import Bookshelf from "./pages/Bookshelf";
+import Auth from "./pages/Auth";
 import { GenreProvider } from "./context/GenreContext";
 import "./App.css";
 import "./styles/catalog.css";
+import "./styles/auth.css";
 
 function AppLayout() {
   return (
@@ -34,6 +36,8 @@ export default function App() {
             <Route path='/books/:id/edit' element={<BookEdit />} />
             <Route path='/shelf' element={<Bookshelf />} />
           </Route>
+          <Route path='/login' element={<Auth />} />
+          <Route path='/signup' element={<Auth mode='signup' />} />
         </Routes>
       </GenreProvider>
     </div>
