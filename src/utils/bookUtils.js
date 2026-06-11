@@ -1,4 +1,8 @@
-import { BOOK_AREA, GAP, ROW_FILL, DUMMY_COLORS } from "../constants/corridor";
+import { BOOK_AREA, GAP, ROW_FILL } from "@/constants/corridor";
+
+// 'YYYY-MM-DDT…' → 'YYYY.MM.DD'. 값이 없으면 fallback.
+export const fmtDate = (s, fallback = "") =>
+  s ? s.slice(0, 10).replace(/-/g, ".") : fallback;
 
 // filter: brightness() 대신 사용 — GPU 컴포지팅 레이어 생성 방지
 export function applyShade(hex, shade) {
@@ -52,24 +56,4 @@ export function fillRow(books) {
     i++;
   }
   return out;
-}
-
-// ── 가짜 책장용 책등 더미 데이터 ──
-export const DUMMY_SPINES = [];
-let _dummyUsed = 0;
-let _dummyI = 0;
-
-while (_dummyUsed < ROW_FILL) {
-  const w = 42 + ((_dummyI * 17) % 30);
-  const hFrac = 0.7 + ((_dummyI * 11) % 30) / 100;
-  const h = Math.round(BOOK_AREA * hFrac);
-  if (_dummyUsed + GAP + w > ROW_FILL) break;
-  DUMMY_SPINES.push({
-    key: `dummy-spine-${_dummyI}`,
-    w,
-    h,
-    bg: DUMMY_COLORS[_dummyI % DUMMY_COLORS.length],
-  });
-  _dummyUsed += w + GAP;
-  _dummyI++;
 }

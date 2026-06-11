@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
-import { useGenres } from "../context/GenreContext";
-import { ROWS } from "../constants/corridor";
-import { fillRow, applyShade } from "../utils/bookUtils";
+import { useGenres } from "@/context/GenreContext";
+import { ROWS } from "@/constants/corridor";
+import { fillRow, applyShade } from "@/utils/bookUtils";
 
 const ShelfRow = memo(function ShelfRow({ sub, books, palette, side, onOpen }) {
   const active = !!sub;

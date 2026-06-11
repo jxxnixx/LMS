@@ -1,5 +1,4 @@
-const OPENAI_API_URL = 'https://api.openai.com/v1/images/generations';
-const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+import { createAiImage } from "@/api/lms/ai/aiAPI";
 
 // ── 장르별 시각 장면 ──────────────────────────────────────────────
 const GENRE_VISUAL = {
@@ -124,29 +123,18 @@ Layout top-to-bottom:
 • Sharp clean line between illustration and bottom panel`;
 }
 
-export async function generateCoverImage(book, quality = 'medium') {
-  const prompt = buildPrompt(book);
-
-  const res = await fetch(OPENAI_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-image-1',
-      prompt,
-      n: 1,
-      size: '1024x1536',
-      quality,
-    }),
+// ── OpenAI 표지 이미지 생성 — 백엔드 /ai/image 프록시 경유 (키는 서버에만, CORS 없음) ──
+// 생성된 이미지를 Data URL로 반환 → 표지 저장 mutation으로 coverImageUrl에 넣는다.
+export async function generateCover({ prompt, quality = "medium" }) {
+  // 생성된 createAiImage → 백엔드 /ai/image 프록시 경유
+  const data = await createAiImage({
+    model: "gpt-image-1",
+    prompt,
+    n: 1,
+    size: "1024x1536",
+    quality,
   });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message ?? '이미지 생성 실패');
-  }
-
-  const data = await res.json();
-  return `data:image/png;base64,${data.data[0].b64_json}`;
+  const b64 = data?.data?.[0]?.b64_json;
+  if (!b64) throw new Error("이미지 데이터를 받지 못했어요.");
+  return `data:image/png;base64,${b64}`;
 }

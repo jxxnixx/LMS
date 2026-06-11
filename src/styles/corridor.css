@@ -1,0 +1,483 @@
+/* ════════════════════════════════════════
+   CORRIDOR VIEW
+════════════════════════════════════════ */
+.corridor-root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #ffffff;
+}
+/* ShelfView가 위에 떠 있을 때 복도를 숨김 (트리는 유지) */
+.corridor-root.is-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.library-title {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.library-title h1 {
+  font-size: 38px;
+  font-weight: 600;
+  color: #1c1c1c;
+  letter-spacing: 2px;
+}
+
+.library-title p {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #9a9a9a;
+  letter-spacing: 1px;
+}
+
+/* 3D 씬 */
+.scene {
+  position: absolute;
+  inset: 0;
+  perspective: 780px;
+  perspective-origin: 50% 45%;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 45%,
+    #797373 0%,
+    #4f4e4a 76%,
+    #201f1e 100%
+  );
+}
+
+.world {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 바닥 + 가운데 카펫 (한 장, rotateX 한 번) */
+.corridor-floor,
+.corridor-ceiling {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 0%;
+}
+
+.corridor-floor {
+  margin-top: 250px;
+  transform: rotateX(90deg);
+  background-image:
+    linear-gradient(180deg, #6f3042 0%, #4a1f2e 100%),
+    linear-gradient(90deg, #b8b0a0 0%, #d8d2c6 42%, #d8d2c6 58%, #b8b0a0 100%);
+  background-size:
+    var(--carpet-w, 300px) 100%,
+    100% 100%;
+  background-position:
+    center top,
+    0 0;
+  background-repeat: no-repeat;
+}
+
+.corridor-ceiling {
+  margin-top: -250px;
+  transform: rotateX(90deg);
+  background: linear-gradient(90deg, #efece3 0%, #fbf9f4 50%, #efece3 100%);
+}
+
+/* 복도 끝벽 — 복도가 허공으로 끊기지 않게 닫아줌 */
+.corridor-end {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 700px;
+  height: 500px;
+  margin-left: -350px;
+  margin-top: -250px;
+  background: radial-gradient(
+    ellipse 60% 70% at 50% 42%,
+    #f3efe4 0%,
+    #ddd6c4 100%
+  );
+  box-shadow: inset 0 0 90px rgba(74, 60, 32, 0.22);
+}
+
+/* ════════════════════════════════════════
+   3D 책장 (BOOKCASE)
+════════════════════════════════════════ */
+.panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.bookcase {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+/* 책장 내부 안쪽 벽 (어두운 배경) */
+.bc-back {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0) 14%,
+      rgba(0, 0, 0, 0) 86%,
+      rgba(0, 0, 0, 0.45) 100%
+    ),
+    #2a1c0f;
+}
+
+/* 책장 입체 옆면 — 상자 모서리를 나무색으로 채움 */
+.bc-side {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.bc-side-l,
+.bc-side-r {
+  width: 58px;
+  height: 500px;
+  margin-left: -29px;
+  margin-top: -250px;
+  background: linear-gradient(90deg, #7d5631 0%, #5a3d24 70%, #3e2818 100%);
+}
+
+.bc-side-l {
+  transform: translateX(-310px) translateZ(29px) rotateY(90deg);
+}
+.bc-side-r {
+  transform: translateX(310px) translateZ(29px) rotateY(90deg);
+}
+
+.bc-side-t,
+.bc-side-b {
+  width: 620px;
+  height: 58px;
+  margin-left: -310px;
+  margin-top: -29px;
+  background: linear-gradient(90deg, #6f4a28, #8a5e34, #6f4a28);
+}
+
+.bc-side-t {
+  transform: translateY(-250px) translateZ(29px) rotateX(90deg);
+}
+.bc-side-b {
+  transform: translateY(250px) translateZ(29px) rotateX(90deg);
+}
+
+/* 선반 영역 (프레임 안쪽) */
+.bc-shelves {
+  position: absolute;
+  inset: 16px;
+  display: flex;
+  flex-direction: column;
+  transform-style: preserve-3d;
+}
+
+/* 책장 위 분류 표지판 — 카메라 정면, 전 구간 표시 */
+/* 책장 위 분류 표지판 */
+.shelf-sign {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: #fffdf8;
+  border: 1px solid #e2dac6;
+  border-radius: 8px; /* 기존 둥기 유지 */
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.24);
+
+  /* CSS 변수를 사용한 위치 지정 및 트랜지션 */
+  transform: translateX(var(--sign-x)) translateY(var(--sign-y))
+    translateZ(var(--sign-z));
+  transition:
+    transform 0.2s cubic-bezier(0.2, 0, 0.2, 1),
+    box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+/* 마우스 올렸을 때 커지게 */
+.shelf-sign:hover {
+  transform: translateX(var(--sign-x)) translateY(var(--sign-y))
+    translateZ(var(--sign-z)) scale(1.15);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.shelf-sign::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 9px;
+  background: #cfc6b2;
+}
+
+/* 라벨 크게 */
+.sign-label {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gc); /* 장르색 — Panel에서 주입 */
+  letter-spacing: 2px;
+}
+
+/* 코드는 작게 */
+.sign-code {
+  font-size: 18px;
+  font-weight: 600;
+  color: #555555;
+  letter-spacing: 0.5px;
+}
+
+/* 한 단 */
+.bc-row {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transform-style: preserve-3d;
+}
+
+/* 한 단의 책 공간 — 줄(소분류) 단위로 개별 hover/클릭 */
+.bc-space {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding-left: 16px;
+  position: relative;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: background 0.18s ease;
+}
+
+.bc-space.is-empty {
+  cursor: default;
+}
+
+.bc-space:not(.is-empty):hover {
+  background: rgba(255, 246, 224, 0.13);
+}
+
+/* 소분류 라벨 — 호버 시 해당 칸 위로 카메라 정면 카드로 등장 */
+.row-sign {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 130px;
+  height: 30px;
+  margin-left: -75px;
+  margin-top: -15px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fffdf8;
+  border: 1px solid #e2dac6;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2b2118;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.row-sign--left {
+  transform: translateZ(100px) rotateY(-90deg);
+}
+.row-sign--right {
+  transform: translateZ(100px) rotateY(90deg);
+}
+
+.bc-space:not(.is-empty):hover .row-sign {
+  opacity: 0.75;
+}
+
+/* 책들 — 살짝 앞으로, hover 시 더 튀어나옴 */
+.bc-books {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  transform: translateZ(8px);
+  transition: transform 0.18s ease;
+}
+
+.bc-space:not(.is-empty):hover .bc-books {
+  transform: translateZ(18px);
+}
+
+/* 책 한 권(책등) — 실제 db.json 데이터 기반 */
+.bc-spine {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 1px 2px 2px 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid rgba(0, 0, 0, 0.45);
+}
+.bc-spine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0) 18%,
+    rgba(0, 0, 0, 0) 78%,
+    rgba(0, 0, 0, 0.32) 100%
+  );
+  pointer-events: none;
+}
+
+.bc-spine-title {
+  writing-mode: vertical-rl;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.5px;
+  max-height: 84%;
+  overflow: hidden;
+  padding: 7px 0;
+  user-select: none;
+}
+
+/* 선반 판자 — 책보다 더 앞으로 튀어나옴 */
+.bc-plank {
+  height: 14px;
+  margin-top: 3px;
+  background: linear-gradient(180deg, #ab7c4c 0%, #7d5430 45%, #573a20 100%);
+  border-radius: 1px;
+  transform: translateZ(24px);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* 나무 프레임 — 가장 앞 */
+.bc-frame {
+  position: absolute;
+  inset: 0;
+  border-style: solid;
+  border-width: 16px;
+  border-color: #9c6c3e #6f4a28 #4a3018 #6f4a28;
+  transform: translateZ(58px);
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.5),
+    0 6px 14px rgba(0, 0, 0, 0.32);
+}
+
+/* 씬 메시지 */
+.scene-msg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 15px;
+  color: #888;
+  line-height: 1.7;
+  z-index: 5;
+}
+
+.scene-msg code {
+  background: #f0eee8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #b5651d;
+}
+
+/* ── 하단 네비게이션 ── */
+.corridor-nav {
+  position: absolute;
+  bottom: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  z-index: 20;
+}
+
+.nav-arrow {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #cfcabb;
+  background: #ffffff;
+  color: #5a5345;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.nav-arrow:hover:not(:disabled) {
+  background: #4a3c20;
+  color: #fff;
+  border-color: #4a3c20;
+}
+
+.nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.nav-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #d4cfc0;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.18s ease;
+}
+
+.nav-dot.on {
+  background: #4a3c20;
+  transform: scale(1.4);
+}
+
+.nav-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #b3b3b3;
+  letter-spacing: 0.5px;
+  z-index: 20;
+}
+

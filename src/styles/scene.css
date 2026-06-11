@@ -1,0 +1,35 @@
+/* ════════════════════════════════════════
+   SCENE — LibraryScene 래퍼 + 표/3D 전환 버튼 오버레이
+════════════════════════════════════════ */
+/* CorridorView 위에 ShelfView를 겹치기 위한 기준 컨테이너 */
+.library-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.view-toggle {
+  position: fixed;
+  top: 28px;
+  right: 32px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  padding: 9px 17px;
+  border-radius: 22px;
+  border: 1px solid #d6d2c6;
+  background: #ffffff;
+  color: #5a5345;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.16s ease;
+}
+
+.view-toggle:hover {
+  background: #4a3c20;
+  color: #fff;
+  border-color: #4a3c20;
+}
+
