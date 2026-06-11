@@ -17,7 +17,7 @@ export default function Header() {
   return (
     <header className='cat-header'>
       <Link to='/' className='cat-brand'>
-        📚 도서관
+        📚 나만의 도서관 📚
       </Link>
       <nav className='cat-nav'>
         <NavLink to='/' end className={navClass}>

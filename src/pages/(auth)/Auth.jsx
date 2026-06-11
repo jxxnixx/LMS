@@ -18,7 +18,7 @@ export default function Auth({ mode: initialMode = "login" }) {
     <div className='auth-wrap'>
       <div className='auth-card'>
         <Link to='/' className='auth-brand'>
-          📚 도서관
+          📚 나만의 도서관 📚
         </Link>
 
         <div className='auth-tabs'>
