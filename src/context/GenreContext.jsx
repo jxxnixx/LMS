@@ -1,17 +1,13 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { getGenres } from '@/api/genres'
+import { createContext, useContext, useMemo } from 'react'
+import { useFetchGenresQuery } from '@/api/lms/genres/useGenresQueries'
 import { EMPTY_GENRE_INDEX, buildGenreIndex } from '@/theme'
 
 const GenreContext = createContext(null)
 
 export function GenreProvider({ children }) {
-  const [genres, setGenres] = useState(null)
-
-  useEffect(() => {
-    getGenres()
-      .then(setGenres)
-      .catch(() => setGenres([]))
-  }, [])
+  // 장르는 거의 정적이라 길게 캐시. 실패 시 빈 배열로 떨어뜨려 앱은 계속 뜨게 한다.
+  const { data, isError } = useFetchGenresQuery({})
+  const genres = data ?? (isError ? [] : undefined)
 
   const index = useMemo(
     () => (genres ? buildGenreIndex(genres) : EMPTY_GENRE_INDEX),
@@ -21,7 +17,7 @@ export function GenreProvider({ children }) {
   const value = useMemo(
     () => ({
       genres: genres ?? [],
-      ready: genres !== null,
+      ready: genres != null,
       get: (code) => index.byCode.get(code),
       subsOf: (topCode) => index.subsByTop.get(topCode) ?? [],
       themeFor: index.themeFor,
