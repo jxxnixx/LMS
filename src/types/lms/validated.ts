@@ -5,7 +5,7 @@ import type { components, paths } from './schema';
 export type getBooks_Params = {
   query?: paths['/books']['get']['parameters']['query'];
 };
-export type getBooks_Response = components['schemas']['BookResponse'];
+export type getBooks_Response = components['schemas']['PageBookResponse'];
 //// createBook
 // createBook
 export type createBook_Body = components['schemas']['BookCreateRequest'];

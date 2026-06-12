@@ -27,8 +27,9 @@ export default function ShelfView({ genre, onBack }) {
   const t = themeFor(topCode);
 
   const { data: books, isError: error } = useFetchBooksQuery({
-    query: { genreCode_like: topCode, _sort: "id", _order: "asc" },
+    query: { genreCode_like: topCode, _sort: "id", _order: "asc", size: 1000 },
   });
+  const items = books?.content ?? [];
 
   return (
     <motion.div
@@ -56,7 +57,7 @@ export default function ShelfView({ genre, onBack }) {
         {books && (
           <div className='bookcase-unit'>
             {subs.map((sub) => {
-              const list = books.filter((b) => b.genreCode === sub.code);
+              const list = items.filter((b) => b.genreCode === sub.code);
               return (
                 <section
                   key={sub.code}

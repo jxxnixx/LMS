@@ -30,8 +30,9 @@ function formatNextRefresh(ts) {
 export default function Bookshelf() {
   const { genres, ready } = useGenres()
   const { data: books, isError: error } = useFetchBooksQuery({
-    query: { isLiked: true, _sort: 'updatedAt', _order: 'desc' },
+    query: { isLiked: true, _sort: 'updatedAt', _order: 'desc', size: 1000 },
   })
+  const items = books?.content ?? []
 
   const [recommendations, setRecommendations] = useState([])
   const [recLoading, setRecLoading] = useState(false)
@@ -51,11 +52,11 @@ export default function Bookshelf() {
       return
     }
 
-    if (books.length === 0) return
+    if (items.length === 0) return
 
     setRecLoading(true)
     setRecError('')
-    fetchRecommendations(books, genres)
+    fetchRecommendations(items, genres)
       .then(items => {
         setRecommendations(items)
         setCache(items)
@@ -66,12 +67,12 @@ export default function Bookshelf() {
   }, [books, genres, ready])
 
   const handleForceRefresh = () => {
-    if (!books || books.length === 0) return
+    if (items.length === 0) return
     localStorage.removeItem(REC_CACHE_KEY)
     setRecLoading(true)
     setRecError('')
     setRecommendations([])
-    fetchRecommendations(books, genres)
+    fetchRecommendations(items, genres)
       .then(items => {
         setRecommendations(items)
         setCache(items)
@@ -95,12 +96,12 @@ export default function Bookshelf() {
         </div>
       )}
       {!books && !error && <div className="cat-state">불러오는 중…</div>}
-      {books && books.length === 0 && (
+      {books && items.length === 0 && (
         <div className="cat-state">아직 책장에 담은 책이 없어요.</div>
       )}
-      {books && books.length > 0 && (
+      {items.length > 0 && (
         <div className="book-grid">
-          {books.map((b) => (
+          {items.map((b) => (
             <BookCard key={b.id} book={b} />
           ))}
         </div>
@@ -115,7 +116,7 @@ export default function Bookshelf() {
               <p className="rec-refresh-note">{formatNextRefresh(cacheTs)}</p>
             )}
           </div>
-          {books && books.length > 0 && (
+          {items.length > 0 && (
             <button
               className="rec-refresh-btn"
               onClick={handleForceRefresh}
@@ -126,7 +127,7 @@ export default function Bookshelf() {
           )}
         </div>
 
-        {books && books.length === 0 && (
+        {books && items.length === 0 && (
           <p className="rec-msg">
             책장에 책을 추가하면 취향에 맞는 책을 추천해드립니다.
           </p>
