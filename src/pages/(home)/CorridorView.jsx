@@ -6,12 +6,12 @@ import { SEG, CARPET_W, ROWS } from "@/constants/corridor";
 
 export default function CorridorView({ onOpenShelf, hidden = false }) {
   const { genres, ready } = useGenres();
-  const { data: books, isError } = useFetchBooksQuery({ query: {} });
+  const { data: books, isError } = useFetchBooksQuery({ query: { size: 1000 } });
   const [step, setStep] = useState(0);
 
   const booksByGenre = useMemo(() => {
     const m = {};
-    for (const b of books || []) (m[b.genreCode] ||= []).push(b);
+    for (const b of books?.content || []) (m[b.genreCode] ||= []).push(b);
     for (const k in m) m[k].sort((a, b) => a.id - b.id);
     return m;
   }, [books]);

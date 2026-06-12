@@ -45,20 +45,22 @@ export default function BookList() {
   }, [debouncedSearch, topCode, subCode, likedOnly, sort]);
 
   const sortOpt = SORT_OPTIONS.find((o) => o.value === sort);
-  const query = { _sort: sortOpt._sort, _order: sortOpt._order };
+  // 백엔드가 페이지 단위로 응답하므로 페이지네이션을 서버에 위임 (Spring은 0-base)
+  const query = {
+    _sort: sortOpt._sort,
+    _order: sortOpt._order,
+    page: page - 1,
+    size: ITEMS_PER_PAGE,
+  };
   if (debouncedSearch) query.title_like = debouncedSearch;
   if (subCode) query.genreCode = subCode;
   else if (topCode) query.genreCode_like = topCode;
   if (likedOnly) query.isLiked = true;
 
-  const { data: books, isError: error } = useFetchBooksQuery({ query });
+  const { data, isError: error } = useFetchBooksQuery({ query });
 
-  const totalPages = books
-    ? Math.max(1, Math.ceil(books.length / ITEMS_PER_PAGE))
-    : 1;
-  const paginated = books
-    ? books.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
-    : [];
+  const books = data?.content ?? [];
+  const totalPages = data?.totalPages ?? 1;
 
   return (
     <Page>
@@ -106,14 +108,14 @@ export default function BookList() {
       </div>
 
       {error && <StateMessage status='server-error' />}
-      {!books && !error && <StateMessage status='loading' />}
-      {books && books.length === 0 && (
+      {!data && !error && <StateMessage status='loading' />}
+      {data && books.length === 0 && (
         <StateMessage>조건에 맞는 책이 없어요.</StateMessage>
       )}
-      {books && books.length > 0 && (
+      {data && books.length > 0 && (
         <>
           <div className='book-grid'>
-            {paginated.map((b) => (
+            {books.map((b) => (
               <BookCard key={b.id} book={b} />
             ))}
           </div>

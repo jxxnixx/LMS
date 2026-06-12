@@ -256,6 +256,40 @@ export interface components {
             label?: string;
             parentCode?: string;
         };
+        PageBookResponse: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["BookResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            empty?: boolean;
+        };
+        PageableObject: {
+            /** Format: int64 */
+            offset?: number;
+            sort?: components["schemas"]["SortObject"];
+            paged?: boolean;
+            unpaged?: boolean;
+            /** Format: int32 */
+            pageNumber?: number;
+            /** Format: int32 */
+            pageSize?: number;
+        };
+        SortObject: {
+            empty?: boolean;
+            sorted?: boolean;
+            unsorted?: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -274,6 +308,8 @@ export interface operations {
                 isLiked?: boolean;
                 _sort?: string;
                 _order?: string;
+                page?: number;
+                size?: number;
             };
             header?: never;
             path?: never;
@@ -287,7 +323,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BookResponse"][];
+                    "*/*": components["schemas"]["PageBookResponse"];
                 };
             };
             /** @description Bad Request */
